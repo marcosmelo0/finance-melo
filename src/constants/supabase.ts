@@ -1,0 +1,3 @@
+export const supaUrl = "https://idmmnitrkmkpopvdlvcm.supabase.co";
+
+export const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkbW1uaXRya21rcG9wdmRsdmNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgxOTE1NjEsImV4cCI6MjA1Mzc2NzU2MX0.BNJ2KP08q46O66VGM3kIyz_35mVjuG4k1UVjxYtNG10";
