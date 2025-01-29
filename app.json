@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "boilerplate-expo",
-    "slug": "boilerplate-expo",
+    "name": "finance-melo",
+    "slug": "finance-melo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
-    "scheme": "boilerplate-expo",
+    "scheme": "finance-melo",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {

@@ -4,12 +4,15 @@
    "strict": true,
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": [
+      "@types/styled-components-react-native"
+    ]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "src/app/styles.js", "src/components/header/styles.js"  ]
 }
