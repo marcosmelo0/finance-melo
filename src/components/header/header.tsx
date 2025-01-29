@@ -1,14 +1,20 @@
-import {  LogoName, LogoNameTwo, Slogan } from "./styles";
+import { LogoName, LogoNameTwo, Slogan } from "./styles";
 import React from "react";
 
-export default function Header() {
+interface HeaderProps {
+    title?: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ title }) => {
     return (
         <>
             <LogoName>
                 Finance
                 <LogoNameTwo>Melo</LogoNameTwo>
             </LogoName>
-            <Slogan>Controle suas despesas</Slogan>
+            <Slogan>{title}</Slogan>
         </>
-    )
-}
+    );
+};
+
+export default Header;
