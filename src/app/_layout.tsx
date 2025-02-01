@@ -21,7 +21,7 @@ function MainLayout() {
     supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         setAuth(session.user);
-        router.replace('/(tabs)/home');
+        router.replace('/(tabs)/home/screen');
         return;
       }
       setAuth(null);

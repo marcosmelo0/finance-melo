@@ -1,5 +1,5 @@
 import styled from "styled-components/native";
-import colors from "../../../constants/colors";
+import colors from "../../../../constants/colors";
 
 const Container = styled.View`
     flex: 1;
@@ -8,4 +8,4 @@ const Container = styled.View`
     padding-right: 14px;
 `;
 
-export default Container;
+export { Container };

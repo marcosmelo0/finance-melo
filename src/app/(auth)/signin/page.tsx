@@ -26,7 +26,7 @@ export default function Login() {
         }
 
         setLoading(false);
-        router.replace('/(tabs)/home');
+        router.replace('/(tabs)/home/screen');
     };
 
     return (
