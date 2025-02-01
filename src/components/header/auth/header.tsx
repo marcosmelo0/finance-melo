@@ -1,4 +1,4 @@
-import { LogoName, LogoNameTwo, Slogan } from "./styles";
+import { Logo, Slogan, HeaderContainer } from "./styles";
 import React from "react";
 
 interface HeaderProps {
@@ -7,13 +7,11 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ title }) => {
     return (
-        <>
-            <LogoName>
-                Finance
-                <LogoNameTwo>Melo</LogoNameTwo>
-            </LogoName>
+        <HeaderContainer>
+          <Logo source={require('@/assets/images/splash_logo.png')}
+          />
             <Slogan>{title}</Slogan>
-        </>
+        </HeaderContainer>
     );
 };
 
