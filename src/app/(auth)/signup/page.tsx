@@ -1,14 +1,15 @@
-import React from "react";
-import { Alert, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import React, { useRef, useState } from "react";
+import { Alert, Pressable, SafeAreaView, ScrollView, Text, View, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Form, Container, Label, Input, Button, ButtonText, ErrorText } from "../signin/styles";
+import { Form, InputGroup, Label, Input, Button, ButtonText, ErrorText } from "@/styles/signin/style";
 import Header from "@/components/header/auth/header";
 import { router } from "expo-router";
-import colors from "../../../../constants/colors";
+import colors from "@/constants/colors";
 import { supabase } from "@/lib/supabase";
 import * as z from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Container } from "@/styles/container/style";
 
 const schema = z.object({
     name: z.string().min(1, { message: "Nome é obrigatório" }).min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
@@ -25,13 +26,37 @@ interface SignUpData {
     email: string;
     password: string;
     confirmPassword: string;
+    image: string | null;
 }
 
 export default function Signup() {
     const { control, handleSubmit, formState: { errors } } = useForm<SignUpData>({
         resolver: zodResolver(schema)
     });
-    const [loading, setLoading] = React.useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const nameLabelAnimation = useRef(new Animated.Value(0)).current;
+    const emailLabelAnimation = useRef(new Animated.Value(0)).current;
+    const passwordLabelAnimation = useRef(new Animated.Value(0)).current;
+    const confirmPasswordLabelAnimation = useRef(new Animated.Value(0)).current;
+
+    const handleFocus = (animation: Animated.Value): void => {
+        Animated.timing(animation, {
+            toValue: 1,
+            duration: 150,
+            useNativeDriver: false,
+        }).start();
+    };
+
+    const handleBlur = (animation: Animated.Value, value: string) => {
+        if (!value) {
+            Animated.timing(animation, {
+                toValue: 0,
+                duration: 150,
+                useNativeDriver: false,
+            }).start();
+        }
+    };
 
     const handleSignUp = async (data: SignUpData): Promise<void> => {
         setLoading(true);
@@ -40,7 +65,8 @@ export default function Signup() {
             password: data.password,
             options: {
                 data: {
-                    name: data.name
+                    name: data.name,
+                    image: null
                 }
             }
         });
@@ -55,6 +81,17 @@ export default function Signup() {
         router.replace('/(auth)/signin/page');
     };
 
+    const getFloatingLabelStyle = (animation: Animated.Value) => ({
+        top: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [14, -10],
+        }),
+        fontSize: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [16, 12],
+        }),
+    });
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, backgroundColor: colors.white }} keyboardShouldPersistTaps="handled">
@@ -64,75 +101,95 @@ export default function Signup() {
                     </Pressable>
                     <Header title="Criar conta" />
                     <Form>
-                        <View>
-                            <Label>Nome completo</Label>
+                        <InputGroup>
                             <Controller
                                 control={control}
                                 name="name"
                                 render={({ field: { onChange, onBlur, value } }) => (
-                                    <Input
-                                        placeholder='Nome completo...'
-                                        onBlur={onBlur}
-                                        onChangeText={onChange}
-                                        value={value}
-                                    />
+                                    <>
+                                        <Input
+                                            placeholder=' '
+                                            onBlur={() => { onBlur(); handleBlur(nameLabelAnimation, value); }}
+                                            onFocus={() => handleFocus(nameLabelAnimation)}
+                                            onChangeText={onChange}
+                                            value={value}
+                                        />
+                                        <Label style={getFloatingLabelStyle(nameLabelAnimation)}>
+                                            Nome completo
+                                        </Label>
+                                    </>
                                 )}
                             />
                             {errors.name && <ErrorText>{errors.name.message}</ErrorText>}
-                        </View>
-                        <View>
-                            <Label>Email</Label>
+                        </InputGroup>
+                        <InputGroup>
                             <Controller
                                 control={control}
                                 name="email"
                                 render={({ field: { onChange, onBlur, value } }) => (
-                                    <Input
-                                        placeholder='Digite seu email...'
-                                        autoCapitalize="none"
-                                        onBlur={onBlur}
-                                        onChangeText={onChange}
-                                        value={value}
-                                    />
+                                    <>
+                                        <Input
+                                            placeholder=' '
+                                            autoCapitalize="none"
+                                            onBlur={() => { onBlur(); handleBlur(emailLabelAnimation, value); }}
+                                            onFocus={() => handleFocus(emailLabelAnimation)}
+                                            onChangeText={onChange}
+                                            value={value}
+                                        />
+                                        <Label style={getFloatingLabelStyle(emailLabelAnimation)}>
+                                            Email
+                                        </Label>
+                                    </>
                                 )}
                             />
                             {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
-                        </View>
-                        <View>
-                            <Label>Senha</Label>
+                        </InputGroup>
+                        <InputGroup>
                             <Controller
                                 control={control}
                                 name="password"
                                 render={({ field: { onChange, onBlur, value } }) => (
-                                    <Input
-                                        placeholder='Digite sua senha...'
-                                        secureTextEntry
-                                        autoCapitalize="none"
-                                        onBlur={onBlur}
-                                        onChangeText={onChange}
-                                        value={value}
-                                    />
+                                    <>
+                                        <Input
+                                            placeholder=' '
+                                            secureTextEntry
+                                            autoCapitalize="none"
+                                            onBlur={() => { onBlur(); handleBlur(passwordLabelAnimation, value); }}
+                                            onFocus={() => handleFocus(passwordLabelAnimation)}
+                                            onChangeText={onChange}
+                                            value={value}
+                                        />
+                                        <Label style={getFloatingLabelStyle(passwordLabelAnimation)}>
+                                            Senha
+                                        </Label>
+                                    </>
                                 )}
                             />
                             {errors.password && <ErrorText>{errors.password.message}</ErrorText>}
-                        </View>
-                        <View>
-                            <Label>Confirmar senha</Label>
+                        </InputGroup>
+                        <InputGroup>
                             <Controller
                                 control={control}
                                 name="confirmPassword"
                                 render={({ field: { onChange, onBlur, value } }) => (
-                                    <Input
-                                        placeholder='Digite sua senha...'
-                                        secureTextEntry
-                                        autoCapitalize="none"
-                                        onBlur={onBlur}
-                                        onChangeText={onChange}
-                                        value={value}
-                                    />
+                                    <>
+                                        <Input
+                                            placeholder=' '
+                                            secureTextEntry
+                                            autoCapitalize="none"
+                                            onBlur={() => { onBlur(); handleBlur(confirmPasswordLabelAnimation, value); }}
+                                            onFocus={() => handleFocus(confirmPasswordLabelAnimation)}
+                                            onChangeText={onChange}
+                                            value={value}
+                                        />
+                                        <Label style={getFloatingLabelStyle(confirmPasswordLabelAnimation)}>
+                                            Confirmar senha
+                                        </Label>
+                                    </>
                                 )}
                             />
                             {errors.confirmPassword && <ErrorText>{errors.confirmPassword.message}</ErrorText>}
-                        </View>
+                        </InputGroup>
 
                         <Button onPress={handleSubmit(handleSignUp)}>
                             <ButtonText>{loading ? 'Carregando...' : 'Criar conta'}</ButtonText>
@@ -141,5 +198,5 @@ export default function Signup() {
                 </Container>
             </ScrollView>
         </SafeAreaView>
-    )
+    );
 }

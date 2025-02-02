@@ -1,4 +1,4 @@
-import { anonKey, supaUrl } from "../../constants/supabase";
+import { anonKey, supaUrl } from "../constants/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
 

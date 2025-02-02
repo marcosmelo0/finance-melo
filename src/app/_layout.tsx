@@ -1,4 +1,3 @@
-import Header from "@/components/header/auth/header";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { router, Stack } from "expo-router";
@@ -35,7 +34,6 @@ function MainLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)/signin/page" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)/signup/page" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)/home" options={{ headerShown: false }} />
     </Stack>
   )
 }
