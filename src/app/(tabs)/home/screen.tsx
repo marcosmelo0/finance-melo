@@ -1,18 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { RefreshControl } from "react-native";
-import { ScrollContainer } from "@/styles/container/style";
+import { ScrollContainer, Text } from "@/styles/container/style";
 import MainHeader from "@/components/header/main/header";
-import ExpensesIncomes from "@/components/cards/expensesIncomes";
-import Carts from "@/components/cards/carts";
+import ExpensesIncomes from "@/components/expensesIncomes";
+import Cards from "@/components/creditCard/cards";
+import { useRouter } from "expo-router";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Home() {
     const [refreshing, setRefreshing] = useState(false);
+    const { refreshUser } = useAuth();
+    const [refreshKey, setRefreshKey] = useState(0);
+    const router = useRouter();
 
     const onRefresh = () => {
         setRefreshing(true);
-        setTimeout(() => {
+        setTimeout(async () => {
+            refreshUser();
             setRefreshing(false);
-        }, 2000);
+            setRefreshKey(prevKey => prevKey + 1);
+        }, 100);
     };
 
     return (
@@ -20,9 +27,11 @@ export default function Home() {
             refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
+            key={refreshKey}
         >
             <MainHeader />
-            <Carts />
+            <Text fontWeight='500' style={{marginTop: 15}}>Meus cartões:</Text>
+            <Cards />
             <ExpensesIncomes />
         </ScrollContainer>
     );

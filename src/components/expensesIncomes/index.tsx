@@ -56,7 +56,7 @@ export default function ExpensesIncomes() {
                 </HeaderCard>
                 <View>
                     <Text fontWeight='bold'>{formattedExpenses}</Text>
-                    <Text onPress={() => supabase.auth.signOut()} size={11} color={colors.zinc} style={{paddingTop: 5}}>{user?.expenses.length} Movimentações</Text>
+                    <Text onPress={() => supabase.auth.signOut()} size={11} color={colors.lightGray} style={{paddingTop: 5}}>{user?.expenses.length} Movimentações</Text>
                 </View>
             </CardExpenses>
             <CardIncomes>

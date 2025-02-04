@@ -10,7 +10,7 @@ export const MainDiv = styled.View`
 
 export const CardExpenses = styled.View`
     flex: 1;
-    background-color: red;
+    background-color: #fc1313ce;
     padding: 15px 10px;
     border-radius: 10px;
     margin-right: 10px;
@@ -32,7 +32,7 @@ export const DivIcon = styled.View`
 
 export const CardIncomes = styled.View`
     flex: 1;
-    background-color: ${colors.green};
+    background-color: ${colors.primary};
     padding: 15px 10px;
     border-radius: 10px;
     height: 102px;
