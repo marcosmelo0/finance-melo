@@ -11,9 +11,7 @@ export default function RootLayout() {
   )
 }
 
-
 function MainLayout() {
-
   const { setAuth } = useAuth();
 
   useEffect(() => {

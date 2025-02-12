@@ -18,8 +18,6 @@ export const Text = styled.Text<{ color?: string; fontWeight?: string; size?: nu
 export const ScrollContainer = styled(ScrollView)`
     flex: 1;
     background-color: ${colors.zinc};
-    padding-left: 14px;
-    padding-right: 14px;
 `;
 
 export { Container };

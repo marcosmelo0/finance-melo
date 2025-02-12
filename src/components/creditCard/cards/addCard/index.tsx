@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 import { ImageCard } from '../styles';
+import { TextInputMask } from 'react-native-masked-text';
 
 const toastConfig = {
     success: (props: any) => (
@@ -55,6 +56,9 @@ export default function AddCreditCardComponent() {
     const [limit, setLimit] = useState('');
     const [cardType, setCardType] = useState<CardType | string>('');
     const { user } = useAuth();
+
+    const formattedLimit = limit ? Number(limit.replace(/[^0-9,-]+/g, '').replace(',', '.')).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+
 
     const handleSubmit = async () => {
         Keyboard.dismiss();
@@ -119,7 +123,9 @@ export default function AddCreditCardComponent() {
         <Form>
             {cardType && cardType !== '' && (
                 <>
-                    <Text fontWeight='500' style={{position: 'absolute', left: 30, top: 30, zIndex: 10}}>Limite: {limit}</Text>
+                    <Text fontWeight='500' style={{ position: 'absolute', left: 77, top: 120, zIndex: 10 }}>Nome: {CardName}</Text>
+                    <Text fontWeight='500' style={{ position: 'absolute', left: 77, top: 145, zIndex: 10 }}>Dia da fatura: {expiryDate}</Text>
+                    <Text fontWeight='500' style={{ position: 'absolute', left: 77, top: 170, zIndex: 10 }}>Limite: {formattedLimit}</Text>
                     <ImageCard style={{ width: '100%' }} source={getCardImage(cardType)} />
                 </>
             )}
@@ -142,19 +148,36 @@ export default function AddCreditCardComponent() {
                 value={CardName}
                 onChangeText={setCardName}
             />
-            <Input
-                placeholder="Dia do vencimento ex: 01"
-                placeholderTextColor={colors.gray}
-                value={expiryDate}
-                onChangeText={setExpiryDate}
-                keyboardType="numeric"
-            />
-            <Input
-                placeholder="Limite do cartão"
-                placeholderTextColor={colors.gray}
+            <View>
+                <Picker
+                    selectedValue={expiryDate}
+                    onValueChange={(itemValue: string) => setExpiryDate(itemValue)}
+                    style={{ color: colors.white, backgroundColor: colors.black }}
+                >
+                    <Picker.Item label="Dia do vencimento" value="" enabled={false} />
+                    {[...Array(31)].map((_, i) => (
+                        <Picker.Item key={i} label={(i < 9 ? `0${i + 1}` : `${i + 1}`).toString()} value={(i < 9 ? `0${i + 1}` : `${i + 1}`).toString()} />
+                    ))}
+                </Picker>
+                <Ionicons name="arrow-down" size={24} color={colors.white} style={{ position: 'absolute', right: 10, top: 15 }} />
+            </View>
+            <TextInputMask
+                type={'money'}
+                options={{
+                    precision: 2,
+                    separator: ',',
+                    delimiter: '.',
+                    unit: 'R$ ',
+                    suffixUnit: ''
+                }}
+                customTextInput={Input}
+                customTextInputProps={{
+                    placeholder: "Limite do cartão",
+                    placeholderTextColor: colors.gray,
+                    keyboardType: "numeric"
+                }}
                 value={limit}
                 onChangeText={setLimit}
-                keyboardType="numeric"
             />
             <Button onPress={handleSubmit}>
                 <Text fontWeight='bold' size={16} style={{ textAlign: 'center', color: colors.white }}>Criar Cartão</Text>

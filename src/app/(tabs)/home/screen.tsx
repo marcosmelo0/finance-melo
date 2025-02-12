@@ -1,17 +1,16 @@
 import React, { useState, useContext } from "react";
 import { RefreshControl } from "react-native";
-import { ScrollContainer, Text } from "@/styles/container/style";
+import { Container, ScrollContainer, Text } from "@/styles/container/style";
 import MainHeader from "@/components/header/main/header";
 import ExpensesIncomes from "@/components/expensesIncomes";
 import Cards from "@/components/creditCard/cards";
-import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
+import HistoryTransaction from "@/components/transaction/historyTransaction";
 
 export default function Home() {
     const [refreshing, setRefreshing] = useState(false);
     const { refreshUser } = useAuth();
     const [refreshKey, setRefreshKey] = useState(0);
-    const router = useRouter();
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -23,16 +22,19 @@ export default function Home() {
     };
 
     return (
-        <ScrollContainer
-            refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            key={refreshKey}
-        >
+        <Container>
             <MainHeader />
-            <Text fontWeight='500' style={{marginTop: 15}}>Meus cartões:</Text>
-            <Cards />
-            <ExpensesIncomes />
-        </ScrollContainer>
+            <ScrollContainer
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+                key={refreshKey}
+            >
+                <Text fontWeight='500' style={{ marginTop: 15 }}>Meus cartões:</Text>
+                <Cards />
+                <ExpensesIncomes />
+                <HistoryTransaction />
+            </ScrollContainer>
+        </Container>
     );
 }

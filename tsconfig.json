@@ -14,5 +14,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "src/app/(auth)/signin/styles.js", "src/components/header/auth/styles.js", "src/styles.js", "src/components/creditCard/cards/styles.js"  ]
+, "src/app/(auth)/signin/styles.js", "src/components/header/auth/styles.js", "src/styles.js", "src/components/creditCard/cards/styles.js", "src/styles/container/style.tsx"  ]
 }

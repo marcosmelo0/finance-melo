@@ -99,7 +99,7 @@ export default function Login() {
                             <ButtonText>{loading ? 'Carregando' : 'Acessar'}</ButtonText>
                         </Button>
                         <Link style={{ marginTop: 16, textAlign: 'center' }} href="/(auth)/signup/page">
-                            <Text>Ainda não pussui uma conta? <Text style={{ color: 'blue' }}>Criar conta</Text></Text>
+                            <Text>Ainda não possui uma conta? <Text style={{ color: 'blue' }}>Criar conta</Text></Text>
                         </Link>
                     </Form>
                 </Container>
