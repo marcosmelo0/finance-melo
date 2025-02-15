@@ -6,6 +6,7 @@ import ExpensesIncomes from "@/components/expensesIncomes";
 import Cards from "@/components/creditCard/cards";
 import { useAuth } from "@/contexts/AuthContext";
 import HistoryTransaction from "@/components/creditCard/cards/transaction/historyTransaction";
+import Balance from "@/components/balance";
 
 export default function Home() {
     const [refreshing, setRefreshing] = useState(false);
@@ -30,6 +31,7 @@ export default function Home() {
                 }
                 key={refreshKey}
             >
+                <Balance />
                 <Text fontWeight='500' style={{ marginTop: 15 }}>Meus cartões:</Text>
                 <Cards />
                 <ExpensesIncomes />

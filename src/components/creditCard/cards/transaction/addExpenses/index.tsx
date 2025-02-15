@@ -7,101 +7,14 @@ import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { DivCard, DivDate } from "./styles";
 import { Text } from "@/styles/container/style";
 import { Button, Input } from "@/components/creditCard/cards/addCard/styles";
-import { categories_expenses } from "@/constants/supabase";
+import { categories_expenses, Installments } from "@/constants/supabase";
 import { Picker } from '@react-native-picker/picker';
 import GetCard from "@/components/creditCard/cards/getCard";
-import { ScrollView } from "react-native";
+import { Keyboard, ScrollView } from "react-native";
 import { supabase } from "@/lib/supabase";
 import { TextInputMask } from 'react-native-masked-text';
-import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
-
-const toastConfig = {
-    success: (props: any) => (
-        <BaseToast
-            {...props}
-            style={{
-                borderLeftColor: '#00c853',
-                borderLeftWidth: 10,
-                backgroundColor: 'aliceblue',
-                borderRadius: 10,
-                margin: 5,
-                shadowColor: '#00c853',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.8,
-                shadowRadius: 2,
-                elevation: 5,
-                padding: 10,
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                top: 50
-            }}
-            contentContainerStyle={{ paddingHorizontal: 5 }}
-            text1Style={{
-                fontSize: 16,
-                fontWeight: 'bold',
-                color: colors.zinc
-            }}
-            text2Style={{
-                fontSize: 14,
-                color: colors.zinc
-            }}
-            renderLeadingIcon={() => (
-                <Icon name="check-circle" size={24} color="#00c853" style={{ marginRight: 10 }} />
-            )}
-        />
-    ),
-    error: (props: any) => (
-        <ErrorToast
-            {...props}
-            style={{
-                borderLeftColor: '#d50000',
-                borderLeftWidth: 5,
-                backgroundColor: '#1b1b1b',
-                borderRadius: 10,
-                margin: 10,
-                shadowColor: '#d50000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.8,
-                shadowRadius: 2,
-                elevation: 5,
-                padding: 10,
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                top: 50
-            }}
-            contentContainerStyle={{ paddingHorizontal: 5 }}
-            text1Style={{
-                fontSize: 16,
-                fontWeight: 'bold',
-                color: 'red'
-            }}
-            text2Style={{
-                fontSize: 14,
-                color: 'aliceblue'
-            }}
-            renderLeadingIcon={() => (
-                <Icon name="alert-circle" size={24} color="red" style={{ marginRight: 10 }} />
-            )}
-        />
-    )
-};
-
-enum Installments {
-    One = "1x",
-    Two = "2x",
-    Three = "3x",
-    Four = "4x",
-    Five = "5x",
-    Six = "6x",
-    Seven = "7x",
-    Eight = "8x",
-    Nine = "9x",
-    Ten = "10x",
-    Eleven = "11x",
-    Twelve = "12x"
-}
+import Toast from "react-native-toast-message";
+import { toastConfigTransactions } from "@/constants/toastconfigs";
 
 export default function AddExpenseTransaction() {
     const { user } = useAuth();
@@ -129,6 +42,7 @@ export default function AddExpenseTransaction() {
 
     const handleSubmit = async () => {
         try {
+            Keyboard.dismiss();
             const unmaskedValue = value ? parseFloat(value.replace(/[^\d]/g, '')) / 100 : 0;
             if (unmaskedValue <= 0) {
                 Toast.show({
@@ -193,7 +107,7 @@ export default function AddExpenseTransaction() {
 
     return (
         <ScrollView nestedScrollEnabled={true} contentContainerStyle={{ flexGrow: 1, paddingBottom: 20, zIndex: 1 }}>
-            <MainTransaction style={{ zIndex: 1 }}>
+            <MainTransaction>
 
                 <DivDate onPress={() => setShowPicker(true)}>
                     <Icon name="calendar" size={20} color={colors.zinc} />
@@ -261,6 +175,11 @@ export default function AddExpenseTransaction() {
                     ))}
                 </Picker>
 
+                {value && (
+                    <Text color={colors.white} fontWeight="bold" style={{ marginTop: 15 }}>
+                        Valor:
+                    </Text>
+                )}
                 <TextInputMask
                     type={'money'}
                     options={{
@@ -272,14 +191,19 @@ export default function AddExpenseTransaction() {
                     }}
                     value={value}
                     onChangeText={text => setValue(text)}
-                    placeholder="Valor..."
+                    placeholder="Quanto gastei?"
                     placeholderTextColor={colors.zinc}
                     style={{ marginTop: 15, padding: 10, borderWidth: 1, borderColor: colors.zinc, borderRadius: 10, backgroundColor: 'aliceblue', color: colors.zinc }}
                     keyboardType="numeric"
                 />
 
+                {description && (
+                    <Text color={colors.white} fontWeight="bold" style={{ marginTop: 15 }}>
+                        Descrição:
+                    </Text>
+                )}
                 <Input
-                    placeholder="Com o que foi minha despesa?..."
+                    placeholder="Gastei com o que?"
                     placeholderTextColor={colors.zinc}
                     style={{ marginTop: 15, padding: 10, borderWidth: 1, borderColor: colors.zinc, borderRadius: 10, backgroundColor: 'aliceblue', color: colors.zinc }}
                     onChangeText={setDescription}
@@ -289,7 +213,7 @@ export default function AddExpenseTransaction() {
                     <Text size={17} color={colors.white} fontWeight="bold">Salvar</Text>
                 </Button>
 
-                <Toast config={toastConfig} />
+                <Toast config={toastConfigTransactions} />
             </MainTransaction>
         </ScrollView>
     )

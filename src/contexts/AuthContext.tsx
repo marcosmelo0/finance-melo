@@ -37,6 +37,7 @@ export interface AuthContextProps {
         expenses: Expense[];
         incomes: Income[];
         cards: Card[];
+        balance: number;
     } | null;
     setAuth: (authUser: User | null) => void;
     refreshUser: () => void;
@@ -62,7 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     async function fetchUser(userId: string) {
         const { data: userData, error: userError } = await supabase
             .from('users')
-            .select('id, name, image')
+            .select('id, name, image, balance')
             .eq('id', userId)
             .single();
         if (userError) {
@@ -73,7 +74,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const expensesData = await fetchUserData('expenses', userId);
         const incomesData = await fetchUserData('incomes', userId);
         const cardsData = await fetchUserData('cards', userId);
-        return { ...userData, expenses: expensesData, incomes: incomesData, cards: cardsData || [] };
+        return { ...userData, expenses: expensesData, incomes: incomesData, cards: cardsData || [], balance: userData.balance };
     }
 
     async function setAuth(authUser: User | null) {
@@ -87,7 +88,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     image: userData.image,
                     expenses: userData.expenses || [],
                     incomes: userData.incomes || [],
-                    cards: userData.cards
+                    cards: userData.cards,
+                    balance: userData.balance
                 });
             } else {
                 console.error("User data is null");
@@ -109,6 +111,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     expenses: updatedUser.expenses || [],
                     incomes: updatedUser.incomes || [],
                     cards: updatedUser.cards,
+                    balance: updatedUser.balance
                 });
             }
         }
@@ -116,37 +119,47 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (user) {
-            const subscribeToChanges = (table: string) => {
+            const subscribeToChanges = (table: string, filterColumn: string = 'user_id') => {
                 return supabase
                     .channel(`public:${table}`)
-                    .on('postgres_changes', { event: '*', schema: 'public', table, filter: `user_id=eq.${user.id}` }, async () => {
-                        const updatedUser = await fetchUser(user.id);
-                        if (updatedUser) {
-                            setUser({
-                                id: user.id,
-                                name: updatedUser.name,
-                                email: user.email,
-                                image: updatedUser.image,
-                                expenses: updatedUser.expenses || [],
-                                incomes: updatedUser.incomes || [],
-                                cards: updatedUser.cards,
-                            });
+                    .on('postgres_changes',
+                        { event: '*', schema: 'public', table, filter: `${filterColumn}=eq.${user.id}` },
+                        async () => {
+
+                            const updatedUser = await fetchUser(user.id);
+                            if (updatedUser) {
+                                setUser(prevUser => {
+                                    if (!prevUser) return prevUser;
+
+                                    return {
+                                        ...prevUser,
+                                        expenses: updatedUser.expenses || prevUser.expenses,
+                                        incomes: updatedUser.incomes || prevUser.incomes,
+                                        cards: updatedUser.cards || prevUser.cards,
+                                        balance: updatedUser.balance
+                                    };
+                                });
+                            }
                         }
-                    })
+                    )
                     .subscribe();
             };
 
             const expensesSubscription = subscribeToChanges('expenses');
             const incomesSubscription = subscribeToChanges('incomes');
             const cardsSubscription = subscribeToChanges('cards');
+            const usersSubscription = subscribeToChanges('users', 'id');
 
             return () => {
                 supabase.removeChannel(expensesSubscription);
                 supabase.removeChannel(incomesSubscription);
                 supabase.removeChannel(cardsSubscription);
+                supabase.removeChannel(usersSubscription); // Remove a assinatura da tabela users
             };
         }
     }, [user]);
+
+
 
     return (
         <AuthContext.Provider value={{ user, setAuth, refreshUser }}>

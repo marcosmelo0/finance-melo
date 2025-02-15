@@ -5,6 +5,7 @@ import colors from "@/constants/colors";
 import { useState } from "react";
 import React from "react";
 import AddExpenseTransaction from "../addExpenses";
+import AddIncomes from "../addIncomes";
 
 export default function SeletecTransaction() {
     const [activeLabel, setActiveLabel] = useState('Despesas');
@@ -25,7 +26,7 @@ export default function SeletecTransaction() {
             {activeLabel === 'Despesas' ? (
                 <AddExpenseTransaction />
             ) : (
-                <AddExpenseTransaction />
+                <AddIncomes />
             )}
         </>
     )

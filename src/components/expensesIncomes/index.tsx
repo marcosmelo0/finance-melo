@@ -5,7 +5,6 @@ import { View } from "react-native";
 import { Expense, Income, useAuth } from "@/contexts/AuthContext";
 import Icon from 'react-native-vector-icons/Feather';
 import colors from "@/constants/colors";
-import { supabase } from "@/lib/supabase";
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
 export default function ExpensesIncomes() {
@@ -56,7 +55,7 @@ export default function ExpensesIncomes() {
                 </HeaderCard>
                 <View>
                     <Text fontWeight='bold'>{formattedExpenses}</Text>
-                    <Text onPress={() => supabase.auth.signOut()} size={11} color={colors.lightGray} style={{paddingTop: 5}}>{user?.expenses.length} Movimentações</Text>
+                    <Text size={11} color={colors.lightGray} style={{ paddingTop: 5 }}>{user?.expenses.length} Movimentações</Text>
                 </View>
             </CardExpenses>
             <CardIncomes>
@@ -68,7 +67,7 @@ export default function ExpensesIncomes() {
                 </HeaderCard>
                 <View>
                     <Text fontWeight='bold'>{formattedIncomes}</Text>
-                    <Text size={11} color={colors.zinc} style={{paddingTop: 5}}>{user?.incomes.length} Movimentações</Text>
+                    <Text size={11} color={colors.zinc} style={{ paddingTop: 5 }}>{user?.incomes.length} Movimentações</Text>
                 </View>
             </CardIncomes>
         </MainDiv>
