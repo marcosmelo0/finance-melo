@@ -3,6 +3,7 @@ import colors from "@/constants/colors";
 
 export const MainTransaction = styled.View`
     flex: 1;
+    padding-bottom: 20px;
 `;
 
 export const DivFilter = styled.View`
@@ -32,4 +33,6 @@ export const CardTransactions = styled.View`
     border-color: ${colors.lightGray};
     padding-bottom: 5px;
     margin-top: 20px;
+    padding-left: 2px;
+    padding-right: 2px;
 `;

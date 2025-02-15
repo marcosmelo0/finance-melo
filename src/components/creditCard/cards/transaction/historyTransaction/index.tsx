@@ -7,6 +7,7 @@ export default function HistoryTransaction() {
     const { user } = useAuth();
     const [activeLabel, setActiveLabel] = useState('Todos');
 
+
     const filteredTransactions = () => {
         if (!user) {
             return [];
@@ -31,7 +32,7 @@ export default function HistoryTransaction() {
             {filteredTransactions().map((transaction, index) => (
                 <CardTransactions key={index}>
                     <Text>{transaction.category}</Text>
-                    <Text>{transaction.value}</Text>
+                    <Text>{transaction.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
                 </CardTransactions>
             ))}
         </MainTransaction>

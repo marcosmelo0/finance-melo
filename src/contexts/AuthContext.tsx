@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     image: userData.image,
                     expenses: userData.expenses || [],
                     incomes: userData.incomes || [],
-                    cards: userData.cards 
+                    cards: userData.cards
                 });
             } else {
                 console.error("User data is null");
@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const subscribeToChanges = (table: string) => {
                 return supabase
                     .channel(`public:${table}`)
-                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table, filter: `user_id=eq.${user.id}` }, async () => {
+                    .on('postgres_changes', { event: '*', schema: 'public', table, filter: `user_id=eq.${user.id}` }, async () => {
                         const updatedUser = await fetchUser(user.id);
                         if (updatedUser) {
                             setUser({

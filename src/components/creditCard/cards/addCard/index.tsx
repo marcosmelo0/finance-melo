@@ -3,13 +3,11 @@ import { Form, Input, Button } from './styles';
 import { Text } from '@/styles/container/style';
 import { Picker } from '@react-native-picker/picker';
 import colors from '@/constants/colors';
-import { Ionicons } from '@expo/vector-icons';
-import { View, Keyboard } from 'react-native';
+import { Keyboard } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 import { ImageCard } from '../styles';
-import { TextInputMask } from 'react-native-masked-text';
 
 const toastConfig = {
     success: (props: any) => (
@@ -54,11 +52,10 @@ export default function AddCreditCardComponent() {
     const [CardName, setCardName] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
     const [limit, setLimit] = useState('');
-    const [cardType, setCardType] = useState<CardType | string>('');
+    const [cardType, setCardType] = useState<CardType | undefined>(undefined);
+    const [isPickerOpen, setIsPickerOpen] = useState(false);
+
     const { user } = useAuth();
-
-    const formattedLimit = limit ? Number(limit.replace(/[^0-9,-]+/g, '').replace(',', '.')).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
-
 
     const handleSubmit = async () => {
         Keyboard.dismiss();
@@ -81,7 +78,7 @@ export default function AddCreditCardComponent() {
             setCardName('');
             setExpiryDate('');
             setLimit('');
-            setCardType('');
+            setCardType(undefined);
 
             Toast.show({
                 type: 'success',
@@ -121,63 +118,48 @@ export default function AddCreditCardComponent() {
 
     return (
         <Form>
-            {cardType && cardType !== '' && (
+            {cardType && cardType !== undefined && (
                 <>
-                    <Text fontWeight='500' style={{ position: 'absolute', left: 77, top: 120, zIndex: 10 }}>Nome: {CardName}</Text>
-                    <Text fontWeight='500' style={{ position: 'absolute', left: 77, top: 145, zIndex: 10 }}>Dia da fatura: {expiryDate}</Text>
-                    <Text fontWeight='500' style={{ position: 'absolute', left: 77, top: 170, zIndex: 10 }}>Limite: {formattedLimit}</Text>
+                    <Text fontWeight='500' style={{ position: 'absolute', left: 30, top: 30, zIndex: 10 }}>Limite: {limit}</Text>
                     <ImageCard style={{ width: '100%' }} source={getCardImage(cardType)} />
                 </>
             )}
-            <View>
-                <Picker
-                    selectedValue={cardType}
-                    onValueChange={(itemValue: string) => setCardType(itemValue)}
-                    style={{ color: colors.white, backgroundColor: colors.black }}
-                >
-                    <Picker.Item label="Selecionar Banco" value="" enabled={false} />
-                    <Picker.Item label="Nubank" value={CardType.Nubank} />
-                    <Picker.Item label="Inter" value={CardType.Inter} />
-                    <Picker.Item label="Brasil Card" value={CardType.BrasilCard} />
-                </Picker>
-                <Ionicons name="arrow-down" size={24} color={colors.white} style={{ position: 'absolute', right: 10, top: 15 }} />
-            </View>
+
+            <Picker
+                selectedValue={cardType}
+                onValueChange={(itemValue: CardType) => setCardType(itemValue as CardType)}
+                style={{ color: colors.zinc, backgroundColor: 'aliceblue' }}
+            >
+                <Picker.Item
+                    style={{ backgroundColor: isPickerOpen ? colors.zinc : 'transparent', color: isPickerOpen ? colors.lightGray : colors.zinc }}
+                    label="Selecionar Banco"
+                    value=""
+                    enabled={false} />
+                {Object.values(CardType).map((type) => (
+                    <Picker.Item
+                        style={{ backgroundColor: colors.zinc, color: colors.white }}
+                        key={type} label={type} value={type} />
+                ))}
+            </Picker>
             <Input
                 placeholder="Nome do Titular"
                 placeholderTextColor={colors.gray}
                 value={CardName}
                 onChangeText={setCardName}
             />
-            <View>
-                <Picker
-                    selectedValue={expiryDate}
-                    onValueChange={(itemValue: string) => setExpiryDate(itemValue)}
-                    style={{ color: colors.white, backgroundColor: colors.black }}
-                >
-                    <Picker.Item label="Dia do vencimento" value="" enabled={false} />
-                    {[...Array(31)].map((_, i) => (
-                        <Picker.Item key={i} label={(i < 9 ? `0${i + 1}` : `${i + 1}`).toString()} value={(i < 9 ? `0${i + 1}` : `${i + 1}`).toString()} />
-                    ))}
-                </Picker>
-                <Ionicons name="arrow-down" size={24} color={colors.white} style={{ position: 'absolute', right: 10, top: 15 }} />
-            </View>
-            <TextInputMask
-                type={'money'}
-                options={{
-                    precision: 2,
-                    separator: ',',
-                    delimiter: '.',
-                    unit: 'R$ ',
-                    suffixUnit: ''
-                }}
-                customTextInput={Input}
-                customTextInputProps={{
-                    placeholder: "Limite do cartão",
-                    placeholderTextColor: colors.gray,
-                    keyboardType: "numeric"
-                }}
+            <Input
+                placeholder="Dia do vencimento ex: 01"
+                placeholderTextColor={colors.gray}
+                value={expiryDate}
+                onChangeText={setExpiryDate}
+                keyboardType="numeric"
+            />
+            <Input
+                placeholder="Limite do cartão"
+                placeholderTextColor={colors.gray}
                 value={limit}
                 onChangeText={setLimit}
+                keyboardType="numeric"
             />
             <Button onPress={handleSubmit}>
                 <Text fontWeight='bold' size={16} style={{ textAlign: 'center', color: colors.white }}>Criar Cartão</Text>

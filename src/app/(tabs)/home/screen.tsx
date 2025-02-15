@@ -5,7 +5,7 @@ import MainHeader from "@/components/header/main/header";
 import ExpensesIncomes from "@/components/expensesIncomes";
 import Cards from "@/components/creditCard/cards";
 import { useAuth } from "@/contexts/AuthContext";
-import HistoryTransaction from "@/components/transaction/historyTransaction";
+import HistoryTransaction from "@/components/creditCard/cards/transaction/historyTransaction";
 
 export default function Home() {
     const [refreshing, setRefreshing] = useState(false);

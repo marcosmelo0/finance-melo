@@ -27,7 +27,7 @@ export default function Cards() {
                 setLoading(true);
                 setTimeout(() => {
                     setLoading(false);
-                }, 2000);
+                }, 0.0500);
             }
         }, 1000);
 
@@ -96,8 +96,8 @@ export default function Cards() {
                 }) : null}
                 <TouchableOpacity onPress={handleAddCard}>
                     <DivCard>
-                            <TitleAddCard>Adicionar Cartão</TitleAddCard>
-                            <ImageAddCard source={require('@/assets/images/add_cart.png')} />
+                        <TitleAddCard>Adicionar Cartão</TitleAddCard>
+                        <ImageAddCard source={require('@/assets/images/add_cart.png')} />
                     </DivCard>
                 </TouchableOpacity>
             </ScrollContainer>
