@@ -1,9 +1,8 @@
 import { useAuth } from "@/contexts/AuthContext";
 import React, { useState, useEffect } from "react";
-import { DivFilter, Label, MainTransaction } from "../historyTransaction/styles";
+import { MainTransaction } from "../historyTransaction/styles";
 import Icon from 'react-native-vector-icons/Feather';
 import colors from "@/constants/colors";
-import { View } from "react-native";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { DivCard, DivDate } from "./styles";
 import { Text } from "@/styles/container/style";
@@ -13,6 +12,81 @@ import { Picker } from '@react-native-picker/picker';
 import GetCard from "@/components/creditCard/cards/getCard";
 import { ScrollView } from "react-native";
 import { supabase } from "@/lib/supabase";
+import { TextInputMask } from 'react-native-masked-text';
+import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
+
+const toastConfig = {
+    success: (props: any) => (
+        <BaseToast
+            {...props}
+            style={{
+                borderLeftColor: '#00c853',
+                borderLeftWidth: 10,
+                backgroundColor: 'aliceblue',
+                borderRadius: 10,
+                margin: 5,
+                shadowColor: '#00c853',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.8,
+                shadowRadius: 2,
+                elevation: 5,
+                padding: 10,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                top: 50
+            }}
+            contentContainerStyle={{ paddingHorizontal: 5 }}
+            text1Style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: colors.zinc
+            }}
+            text2Style={{
+                fontSize: 14,
+                color: colors.zinc
+            }}
+            renderLeadingIcon={() => (
+                <Icon name="check-circle" size={24} color="#00c853" style={{ marginRight: 10 }} />
+            )}
+        />
+    ),
+    error: (props: any) => (
+        <ErrorToast
+            {...props}
+            style={{
+                borderLeftColor: '#d50000',
+                borderLeftWidth: 5,
+                backgroundColor: '#1b1b1b',
+                borderRadius: 10,
+                margin: 10,
+                shadowColor: '#d50000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.8,
+                shadowRadius: 2,
+                elevation: 5,
+                padding: 10,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                top: 50
+            }}
+            contentContainerStyle={{ paddingHorizontal: 5 }}
+            text1Style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: 'red'
+            }}
+            text2Style={{
+                fontSize: 14,
+                color: 'aliceblue'
+            }}
+            renderLeadingIcon={() => (
+                <Icon name="alert-circle" size={24} color="red" style={{ marginRight: 10 }} />
+            )}
+        />
+    )
+};
 
 enum Installments {
     One = "1x",
@@ -31,65 +105,95 @@ enum Installments {
 
 export default function AddExpenseTransaction() {
     const { user } = useAuth();
-    const [activeLabel, setActiveLabel] = useState('Despesas');
     const [date, setDate] = useState(new Date());
-    const [open, setOpen] = useState(false)
     const [showPicker, setShowPicker] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [selectedCard, setSelectedCard] = useState("");
     const [cards, setCards] = useState<any[]>([]);
     const [paymentMethod, setPaymentMethod] = useState<string>('');
-    const [value, setValue] = useState<number>();
+    const [value, setValue] = useState<string>();
     const [description, setDescription] = useState<string>();
     const [installments, setInstallments] = useState<string>('');
 
     useEffect(() => {
-        GetCard().then((result) => {
-            if (result) {
-                setCards(result);
-            }
-        });
+        if (user?.id) {
+            GetCard({ userId: user.id }).then((result) => {
+                result && setCards(result);
+            });
+        }
     }, []);
 
     useEffect(() => {
-        if (paymentMethod === 'Pix') {
-            setSelectedCard('');
-        }
+        paymentMethod === 'Pix' && setSelectedCard('');
     }, [paymentMethod]);
 
     const handleSubmit = async () => {
-        const { data, error } = await supabase
-            .from('expenses')
-            .insert([
-                {
-                    user_id: user?.id,
-                    payment_method: paymentMethod,
-                    value: value,
-                    title: description,
-                    category: selectedCategory,
-                    card_id: selectedCard,
-                    date: date,
-                    installments: installments
-                }
-            ]);
+        try {
+            const unmaskedValue = value ? parseFloat(value.replace(/[^\d]/g, '')) / 100 : 0;
+            if (unmaskedValue <= 0) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Erro!',
+                    text2: 'A despesa deve ser maior que zero.',
+                    visibilityTime: 4000,
+                    autoHide: true,
+                    topOffset: 30,
+                    bottomOffset: 40,
+                });
+                return;
+            }
+
+            const numericInstallments = installments ? parseInt(installments.replace(/[^\d]/g, '')) : 0;
+            const { data, error } = await supabase
+                .from('expenses')
+                .insert([
+                    {
+                        user_id: user?.id,
+                        type_payment: paymentMethod,
+                        value: unmaskedValue,
+                        title: description,
+                        category: selectedCategory,
+                        card_id: selectedCard,
+                        date: date,
+                        installments: numericInstallments
+                    }
+                ]);
+
+            Toast.show({
+                type: 'success',
+                text1: 'Ótimo!',
+                text2: 'Despesa cadastrada com sucesso!',
+                visibilityTime: 4000,
+                autoHide: true,
+                topOffset: 30,
+                bottomOffset: 40,
+            });
+
+            setPaymentMethod('');
+            setSelectedCard('');
+            setInstallments('');
+            setSelectedCategory('');
+            setValue('');
+            setDescription('');
+            setDate(new Date());
+            setDescription('');
+        } catch (error: any) {
+            Toast.show({
+                type: 'error',
+                text1: 'Erro!',
+                text2: 'Erro ao adicionar despesa.',
+                visibilityTime: 4000,
+                autoHide: true,
+                topOffset: 30,
+                bottomOffset: 40,
+            });
+            console.error('Error inserting new expense:', error.message);
+        }
     }
 
-    console.log(selectedCard);
-
     return (
-        <ScrollView nestedScrollEnabled={true} contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}>
-            <MainTransaction>
-                <DivFilter>
-                    <View style={{ position: 'absolute', backgroundColor: colors.zinc, zIndex: 10, left: 15, top: 10, borderRadius: 9999, padding: 1.5 }} >
-                        <Icon name="arrow-up-right" size={20} color='red' />
-                    </View>
-                    <Label size={"50%"} active={activeLabel === 'Despesas'} onPress={() => setActiveLabel('Despesas')}>Despesas</Label>
-
-                    <View style={{ position: 'absolute', backgroundColor: colors.zinc, zIndex: 10, right: 125, top: 10, borderRadius: 9999, padding: 1.5 }} >
-                        <Icon name="arrow-down-left" size={20} color={colors.green} />
-                    </View>
-                    <Label size={"50%"} active={activeLabel === 'Receitas'} onPress={() => setActiveLabel('Receitas')}>Receitas</Label>
-                </DivFilter>
+        <ScrollView nestedScrollEnabled={true} contentContainerStyle={{ flexGrow: 1, paddingBottom: 20, zIndex: 1 }}>
+            <MainTransaction style={{ zIndex: 1 }}>
 
                 <DivDate onPress={() => setShowPicker(true)}>
                     <Icon name="calendar" size={20} color={colors.zinc} />
@@ -118,10 +222,10 @@ export default function AddExpenseTransaction() {
                 >
                     <Picker.Item color={colors.zinc} label="Tipo de pagamento" enabled={false} value="" />
                     <Picker.Item style={{ backgroundColor: 'aliceblue', color: colors.zinc }} label="Pix" value="Pix" />
-                    <Picker.Item style={{ backgroundColor: 'aliceblue', color: colors.zinc }} label="Cartão" value="Cartão" />
+                    <Picker.Item style={{ backgroundColor: 'aliceblue', color: colors.zinc }} label="Cartão" value="Cartão de crédito" />
                 </Picker>
 
-                {paymentMethod === 'Cartão' && (
+                {paymentMethod === 'Cartão de crédito' && (
                     <DivCard>
                         <Picker
                             selectedValue={selectedCard}
@@ -157,23 +261,35 @@ export default function AddExpenseTransaction() {
                     ))}
                 </Picker>
 
-                <Input
+                <TextInputMask
+                    type={'money'}
+                    options={{
+                        precision: 2,
+                        separator: ',',
+                        delimiter: '.',
+                        unit: 'R$ ',
+                        suffixUnit: ''
+                    }}
+                    value={value}
+                    onChangeText={text => setValue(text)}
                     placeholder="Valor..."
                     placeholderTextColor={colors.zinc}
-                    style={{ marginTop: 15, padding: 10, borderWidth: 1, borderColor: colors.zinc, borderRadius: 10, backgroundColor: 'aliceblue' }}
+                    style={{ marginTop: 15, padding: 10, borderWidth: 1, borderColor: colors.zinc, borderRadius: 10, backgroundColor: 'aliceblue', color: colors.zinc }}
                     keyboardType="numeric"
                 />
 
                 <Input
                     placeholder="Com o que foi minha despesa?..."
                     placeholderTextColor={colors.zinc}
-                    style={{ marginTop: 15, padding: 10, borderWidth: 1, borderColor: colors.zinc, borderRadius: 10, backgroundColor: 'aliceblue' }}
+                    style={{ marginTop: 15, padding: 10, borderWidth: 1, borderColor: colors.zinc, borderRadius: 10, backgroundColor: 'aliceblue', color: colors.zinc }}
+                    onChangeText={setDescription}
                 />
 
-                <Button style={{ marginTop: 20 }}>
+                <Button style={{ marginTop: 20 }} onPress={handleSubmit}>
                     <Text size={17} color={colors.white} fontWeight="bold">Salvar</Text>
                 </Button>
 
+                <Toast config={toastConfig} />
             </MainTransaction>
         </ScrollView>
     )

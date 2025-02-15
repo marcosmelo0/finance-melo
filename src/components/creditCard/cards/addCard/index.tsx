@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Button } from './styles';
 import { Text } from '@/styles/container/style';
 import { Picker } from '@react-native-picker/picker';
@@ -8,8 +8,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 import { ImageCard } from '../styles';
+import { TextInputMask } from 'react-native-masked-text';
 
-const toastConfig = {
+export const toastConfig = {
     success: (props: any) => (
         <BaseToast
             {...props}
@@ -60,9 +61,11 @@ export default function AddCreditCardComponent() {
     const handleSubmit = async () => {
         Keyboard.dismiss();
 
+        const unmaskedLimit = limit.replace(/[R$\s.]/g, '').replace(',', '.');
+
         const cardData = {
             user_id: user?.id,
-            limit: limit,
+            limit: unmaskedLimit,
             due_date: expiryDate,
             name: CardName,
             bank: cardType
@@ -154,12 +157,23 @@ export default function AddCreditCardComponent() {
                 onChangeText={setExpiryDate}
                 keyboardType="numeric"
             />
-            <Input
+            <TextInputMask
+                type={'money'}
+                options={{
+                    precision: 2,
+                    separator: ',',
+                    delimiter: '.',
+                    unit: 'R$ ',
+                    suffixUnit: ''
+                }}
                 placeholder="Limite do cartão"
                 placeholderTextColor={colors.gray}
                 value={limit}
                 onChangeText={setLimit}
-                keyboardType="numeric"
+                customTextInput={Input}
+                customTextInputProps={{
+                    keyboardType: 'numeric'
+                }}
             />
             <Button onPress={handleSubmit}>
                 <Text fontWeight='bold' size={16} style={{ textAlign: 'center', color: colors.white }}>Criar Cartão</Text>
