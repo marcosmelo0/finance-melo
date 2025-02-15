@@ -1,25 +1,25 @@
 {
   "expo": {
-    "name": "boilerplate-expo",
-    "slug": "boilerplate-expo",
+    "name": "finance-melo",
+    "slug": "finance-melo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/images/icon.png",
-    "scheme": "boilerplate-expo",
+    "icon": "./src/assets/images/splash_logo.png",
+    "scheme": "finance-melo",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./src/assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./src/assets/images/splash_logo.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#0c0c1b"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./src/assets/images/splash_logo.png",
+        "backgroundColor": "#0c0c1b"
       }
     },
     "web": {
