@@ -8,6 +8,7 @@ export interface Expense {
     value: number;
     category: string;
     date: Date;
+    type_payment: string;
 };
 
 export interface Income {
@@ -30,7 +31,8 @@ export interface Card {
 
 export interface AuthContextProps {
     user: {
-        id: string;
+        user_id: string;
+        balance: number;
         name: string;
         email: string | undefined;
         image: string | null;
@@ -61,9 +63,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     async function fetchUser(userId: string) {
         const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('id, name, image')
-            .eq('id', userId)
+            .from('users_profile')
+            .select('id, name, image, balance')
+            .eq('user_id', userId)
             .single();
         if (userError) {
             console.error("Erro ao buscar usuário:", userError);
@@ -81,13 +83,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const userData = await fetchUser(authUser.id);
             if (userData) {
                 setUser({
-                    id: authUser.id,
+                    user_id: authUser.id,
                     name: userData.name,
                     email: authUser.email,
                     image: userData.image,
                     expenses: userData.expenses || [],
                     incomes: userData.incomes || [],
-                    cards: userData.cards
+                    cards: userData.cards,
+                    balance: userData.balance
                 });
             } else {
                 console.error("User data is null");
@@ -99,16 +102,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const refreshUser = async () => {
         if (user) {
-            const updatedUser = await fetchUser(user.id);
+            const updatedUser = await fetchUser(user.user_id);
             if (updatedUser) {
                 setUser({
-                    id: user.id,
+                    user_id: user.user_id,
                     name: updatedUser.name,
                     email: user.email,
                     image: updatedUser.image,
                     expenses: updatedUser.expenses || [],
                     incomes: updatedUser.incomes || [],
                     cards: updatedUser.cards,
+                    balance: updatedUser.balance
                 });
             }
         }
@@ -116,23 +120,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (user) {
-            const subscribeToChanges = (table: string) => {
+
+            const subscribeToChanges = (table: string, filterColumn: string = 'user_id') => {
                 return supabase
                     .channel(`public:${table}`)
-                    .on('postgres_changes', { event: '*', schema: 'public', table, filter: `user_id=eq.${user.id}` }, async () => {
-                        const updatedUser = await fetchUser(user.id);
-                        if (updatedUser) {
-                            setUser({
-                                id: user.id,
-                                name: updatedUser.name,
-                                email: user.email,
-                                image: updatedUser.image,
-                                expenses: updatedUser.expenses || [],
-                                incomes: updatedUser.incomes || [],
-                                cards: updatedUser.cards,
-                            });
+                    .on('postgres_changes',
+                        { event: '*', schema: 'public', table, filter: `${filterColumn}=eq.${user.user_id}` },
+                        async (payload) => {
+
+                            const updatedUser = await fetchUser(user.user_id);
+                            if (updatedUser) {
+                                console.log(updatedUser)
+                                setUser(prevUser => {
+                                    if (!prevUser) return prevUser;
+
+                                    return {
+                                        ...prevUser,
+                                        expenses: updatedUser.expenses || prevUser.expenses,
+                                        incomes: updatedUser.incomes || prevUser.incomes,
+                                        cards: updatedUser.cards || prevUser.cards,
+                                        balance: updatedUser.balance
+                                    };
+                                });
+                            }
                         }
-                    })
+                    )
                     .subscribe();
             };
 
@@ -145,8 +157,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 supabase.removeChannel(incomesSubscription);
                 supabase.removeChannel(cardsSubscription);
             };
+        } else {
+            console.log('Nenhum usuário detectado');
         }
     }, [user]);
+
 
     return (
         <AuthContext.Provider value={{ user, setAuth, refreshUser }}>

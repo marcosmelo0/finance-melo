@@ -4,7 +4,6 @@ import colors from "@/constants/colors";
 export const MainDiv = styled.View`
     flex-direction: row;
     margin-top: 20px;
-    margin-bottom: 20px;
     gap: 10px;
 `;
 

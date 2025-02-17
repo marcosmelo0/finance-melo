@@ -54,7 +54,7 @@ export default function Cards() {
     const getCardStyles = (bank: string) => {
         switch (bank) {
             case 'Nubank':
-                return { topPosition: 15, bottomPosition: 80, leftPosition: 75 };
+                return { topPosition: 15, bottomPosition: 70, leftPosition: 75 };
             case 'Inter':
                 return { topPosition: 10, bottomPosition: 95, leftPosition: 75 };
             case 'Brasil Card':
@@ -82,8 +82,8 @@ export default function Cards() {
                             <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', top: topPosition + 40, left: leftPosition, width: '65%' }}>
                                 <Text fontWeight='bold'>Disponível: <Text>{formattedCurrentLimit}</Text></Text>
                             </ShimmerPlaceHolder>
-                            <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition, left: leftPosition, width: '40%' }}>
-                                <Text fontWeight='bold'>{card.name}</Text>
+                            <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition, left: leftPosition, width: '65%' }}>
+                                <Text fontWeight='bold'>{card.name.toUpperCase()}</Text>
                             </ShimmerPlaceHolder>
                             <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition - 25, left: leftPosition, width: '20%' }}>
                                 <Text fontWeight='500'>Fatura:</Text>

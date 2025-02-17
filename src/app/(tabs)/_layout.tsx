@@ -54,8 +54,8 @@ export default function TabLayout() {
             headerTitleAlign: 'center',
             headerTintColor: `${colors.white}`,
             tabBarIcon: ({ color, focused }) => (
-              <View style={{ borderRadius: 9999, alignItems: 'center', justifyContent: 'center', width: 35, height: 35, backgroundColor: focused ? colors.zinc : colors.lightGray, top: 4 }}>
-                <FontAwesome size={28} name="plus" color={focused ? colors.green : colors.zinc} />
+              <View style={{ borderRadius: 999, alignItems: 'center', justifyContent: 'center', width: 45, height: 32, backgroundColor: focused ? colors.zinc : colors.lightGray, top: 4, }}>
+                <FontAwesome size={20} name="plus" color={focused ? colors.green : colors.zinc} />
               </View>
             ),
             headerLeft: () => (
