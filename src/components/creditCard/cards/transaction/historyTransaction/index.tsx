@@ -40,6 +40,7 @@ export default function HistoryTransaction() {
                 return (
                     <CardTransactions key={index}>
                         <DivIcon style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+
                             {isExpense ? (
                                 <>
                                     {transaction.type_payment === 'Cartão de crédito' && (
@@ -58,7 +59,6 @@ export default function HistoryTransaction() {
                             <Icon style={{ top: 2 }} name={isExpense ? 'arrow-down' : 'arrow-up'} size={18} color={isExpense ? 'red' : colors.green} />
                             <Text fontWeight='bold' color={isExpense ? 'red' : colors.green}>{transaction.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
                         </DivIcon>
-
                     </CardTransactions>
                 );
             })}
