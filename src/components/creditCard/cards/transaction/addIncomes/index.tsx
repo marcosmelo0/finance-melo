@@ -65,7 +65,6 @@ export default function AddIncomes() {
 
             setDescription('');
             setSelectedCategory('');
-            setDescription('');
             setValue('')
 
         } catch (error: any) {

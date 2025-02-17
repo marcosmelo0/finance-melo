@@ -90,7 +90,7 @@ export default function AddExpenseTransaction() {
             setValue('');
             setDescription('');
             setDate(new Date());
-            setDescription('');
+
         } catch (error: any) {
             Toast.show({
                 type: 'error',
