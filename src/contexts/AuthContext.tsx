@@ -8,6 +8,7 @@ export interface Expense {
     value: number;
     category: string;
     date: Date;
+    type_payment: string;
 };
 
 export interface Income {
@@ -31,13 +32,13 @@ export interface Card {
 export interface AuthContextProps {
     user: {
         user_id: string;
+        balance: number;
         name: string;
         email: string | undefined;
         image: string | null;
         expenses: Expense[];
         incomes: Income[];
         cards: Card[];
-        balance: number;
     } | null;
     setAuth: (authUser: User | null) => void;
     refreshUser: () => void;
@@ -119,19 +120,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (user) {
-            console.log('Usuário detectado:', user);
 
             const subscribeToChanges = (table: string, filterColumn: string = 'user_id') => {
-                console.log(`Criando assinatura para mudanças na tabela ${table}`);
                 return supabase
                     .channel(`public:${table}`)
                     .on('postgres_changes',
                         { event: '*', schema: 'public', table, filter: `${filterColumn}=eq.${user.user_id}` },
                         async (payload) => {
-                            console.log(`Mudança detectada na tabela ${table}:`, payload);
 
                             const updatedUser = await fetchUser(user.user_id);
                             if (updatedUser) {
+                                console.log(updatedUser)
                                 setUser(prevUser => {
                                     if (!prevUser) return prevUser;
 
@@ -154,7 +153,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const cardsSubscription = subscribeToChanges('cards');
 
             return () => {
-                console.log('Removendo assinaturas');
                 supabase.removeChannel(expensesSubscription);
                 supabase.removeChannel(incomesSubscription);
                 supabase.removeChannel(cardsSubscription);
@@ -164,40 +162,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }, [user]);
 
-    useEffect(() => {
-        if (user) {
-            console.log('Criando assinatura para mudanças na tabela users_profile');
-            const usersProfileSubscription = supabase
-                .channel('public:users_profile')
-                .on('postgres_changes',
-                    { event: '*', schema: 'public', table: 'users_profile', filter: `id=eq.${user.user_id}` },
-                    async (payload) => {
-                        console.log('Mudança detectada na tabela users_profile:', payload);
-
-                        const updatedUser = await fetchUser(user.user_id);
-                        if (updatedUser) {
-                            setUser(prevUser => {
-                                if (!prevUser) return prevUser;
-
-                                return {
-                                    ...prevUser,
-                                    expenses: updatedUser.expenses || prevUser.expenses,
-                                    incomes: updatedUser.incomes || prevUser.incomes,
-                                    cards: updatedUser.cards || prevUser.cards,
-                                    balance: updatedUser.balance
-                                };
-                            });
-                        }
-                    }
-                )
-                .subscribe();
-
-            return () => {
-                console.log('Removendo assinatura da tabela users_profile');
-                supabase.removeChannel(usersProfileSubscription);
-            };
-        }
-    }, [user]);
 
     return (
         <AuthContext.Provider value={{ user, setAuth, refreshUser }}>

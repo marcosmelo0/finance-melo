@@ -34,5 +34,6 @@ export const CardTransactions = styled.View`
     padding-bottom: 5px;
     margin-top: 20px;
     padding-left: 2px;
+    align-items: center;
     padding-right: 2px;
 `;

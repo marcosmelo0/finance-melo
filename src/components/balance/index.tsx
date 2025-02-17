@@ -17,8 +17,8 @@ export default function Balance() {
 
     return (
         <DivBalance>
-            <Text fontWeight="bold">Saldo:</Text>
-            <Text>{formattedBalance}</Text>
+            <Text size={16} fontWeight="bold">Saldo: </Text>
+            <Text size={16} fontWeight="bold">{formattedBalance}</Text>
         </DivBalance>
     )
 }

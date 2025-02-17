@@ -30,4 +30,5 @@ export const DivAvatar = styled.View`
 
 export const DivWelcome = styled.View`
     flex: 1;
+
 `;

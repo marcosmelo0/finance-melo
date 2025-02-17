@@ -32,7 +32,6 @@ export default function Home() {
                 key={refreshKey}
             >
                 <Balance />
-                <Text fontWeight='500' style={{ marginTop: 15 }}>Meus cartões:</Text>
                 <Cards />
                 <ExpensesIncomes />
                 <HistoryTransaction />
