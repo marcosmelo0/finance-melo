@@ -48,7 +48,7 @@ export default function HistoryTransaction() {
                                 </>
                             ) : (
                                 <View style={{ flexDirection: 'column' }}>
-                                    <FontAwesome6 style={{ padding: 12, backgroundColor: colors.green, borderRadius: 10 }} name='pix' color={colors.zinc} size={20} /><Text fontWeight='bold' color={colors.zinc} size={10} style={{ bottom: 15 }}>Pix</Text>
+                                    <FontAwesome6 style={{ padding: 12, backgroundColor: colors.green, borderRadius: 10 }} name='pix' color={colors.zinc} size={20} /><Text fontWeight='bold' color={colors.zinc} size={10} style={{ bottom: 15, left: 14 }}>Pix</Text>
                                 </View>
                             )}
                             <Text>{transaction.category}</Text>
