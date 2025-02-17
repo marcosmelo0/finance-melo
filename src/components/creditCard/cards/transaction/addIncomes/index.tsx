@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ErrorHandlerCallback, Keyboard, ScrollView, } from "react-native";
+import { Keyboard, ScrollView, } from "react-native";
 import { MainTransaction } from "../historyTransaction/styles";
 import { DivDate } from "../addExpenses/styles";
 import Icon from "react-native-vector-icons/Feather";
@@ -45,7 +45,7 @@ export default function AddIncomes() {
                 .from('incomes')
                 .insert([
                     {
-                        user_id: user?.id,
+                        user_id: user?.user_id,
                         category: selectedCategory,
                         value: unmaskedValue,
                         title: description,

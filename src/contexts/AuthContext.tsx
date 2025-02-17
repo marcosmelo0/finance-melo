@@ -30,7 +30,7 @@ export interface Card {
 
 export interface AuthContextProps {
     user: {
-        id: string;
+        user_id: string;
         name: string;
         email: string | undefined;
         image: string | null;
@@ -62,9 +62,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     async function fetchUser(userId: string) {
         const { data: userData, error: userError } = await supabase
-            .from('users')
+            .from('users_profile')
             .select('id, name, image, balance')
-            .eq('id', userId)
+            .eq('user_id', userId)
             .single();
         if (userError) {
             console.error("Erro ao buscar usuário:", userError);
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const expensesData = await fetchUserData('expenses', userId);
         const incomesData = await fetchUserData('incomes', userId);
         const cardsData = await fetchUserData('cards', userId);
-        return { ...userData, expenses: expensesData, incomes: incomesData, cards: cardsData || [], balance: userData.balance };
+        return { ...userData, expenses: expensesData, incomes: incomesData, cards: cardsData || [] };
     }
 
     async function setAuth(authUser: User | null) {
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const userData = await fetchUser(authUser.id);
             if (userData) {
                 setUser({
-                    id: authUser.id,
+                    user_id: authUser.id,
                     name: userData.name,
                     email: authUser.email,
                     image: userData.image,
@@ -101,10 +101,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const refreshUser = async () => {
         if (user) {
-            const updatedUser = await fetchUser(user.id);
+            const updatedUser = await fetchUser(user.user_id);
             if (updatedUser) {
                 setUser({
-                    id: user.id,
+                    user_id: user.user_id,
                     name: updatedUser.name,
                     email: user.email,
                     image: updatedUser.image,
@@ -119,14 +119,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (user) {
+            console.log('Usuário detectado:', user);
+
             const subscribeToChanges = (table: string, filterColumn: string = 'user_id') => {
+                console.log(`Criando assinatura para mudanças na tabela ${table}`);
                 return supabase
                     .channel(`public:${table}`)
                     .on('postgres_changes',
-                        { event: '*', schema: 'public', table, filter: `${filterColumn}=eq.${user.id}` },
-                        async () => {
+                        { event: '*', schema: 'public', table, filter: `${filterColumn}=eq.${user.user_id}` },
+                        async (payload) => {
+                            console.log(`Mudança detectada na tabela ${table}:`, payload);
 
-                            const updatedUser = await fetchUser(user.id);
+                            const updatedUser = await fetchUser(user.user_id);
                             if (updatedUser) {
                                 setUser(prevUser => {
                                     if (!prevUser) return prevUser;
@@ -148,18 +152,52 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const expensesSubscription = subscribeToChanges('expenses');
             const incomesSubscription = subscribeToChanges('incomes');
             const cardsSubscription = subscribeToChanges('cards');
-            const usersSubscription = subscribeToChanges('users', 'id');
 
             return () => {
+                console.log('Removendo assinaturas');
                 supabase.removeChannel(expensesSubscription);
                 supabase.removeChannel(incomesSubscription);
                 supabase.removeChannel(cardsSubscription);
-                supabase.removeChannel(usersSubscription); // Remove a assinatura da tabela users
             };
+        } else {
+            console.log('Nenhum usuário detectado');
         }
     }, [user]);
 
+    useEffect(() => {
+        if (user) {
+            console.log('Criando assinatura para mudanças na tabela users_profile');
+            const usersProfileSubscription = supabase
+                .channel('public:users_profile')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'users_profile', filter: `id=eq.${user.user_id}` },
+                    async (payload) => {
+                        console.log('Mudança detectada na tabela users_profile:', payload);
 
+                        const updatedUser = await fetchUser(user.user_id);
+                        if (updatedUser) {
+                            setUser(prevUser => {
+                                if (!prevUser) return prevUser;
+
+                                return {
+                                    ...prevUser,
+                                    expenses: updatedUser.expenses || prevUser.expenses,
+                                    incomes: updatedUser.incomes || prevUser.incomes,
+                                    cards: updatedUser.cards || prevUser.cards,
+                                    balance: updatedUser.balance
+                                };
+                            });
+                        }
+                    }
+                )
+                .subscribe();
+
+            return () => {
+                console.log('Removendo assinatura da tabela users_profile');
+                supabase.removeChannel(usersProfileSubscription);
+            };
+        }
+    }, [user]);
 
     return (
         <AuthContext.Provider value={{ user, setAuth, refreshUser }}>

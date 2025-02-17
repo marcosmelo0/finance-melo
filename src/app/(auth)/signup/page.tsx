@@ -60,19 +60,21 @@ export default function Signup() {
 
     const handleSignUp = async (data: SignUpData): Promise<void> => {
         setLoading(true);
+        console.log(data)
         const { error } = await supabase.auth.signUp({
             email: data.email,
-            password: data.password,
+            password: data.confirmPassword,
             options: {
                 data: {
                     name: data.name,
-                    image: null
+                    image: null,
                 }
             }
         });
 
         if (error) {
             Alert.alert('Error', error.message);
+            console.log(error)
             setLoading(false);
             return;
         }
