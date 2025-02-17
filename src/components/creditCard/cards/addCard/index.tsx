@@ -64,7 +64,7 @@ export default function AddCreditCardComponent() {
         const unmaskedLimit = limit.replace(/[R$\s.]/g, '').replace(',', '.');
 
         const cardData = {
-            user_id: user?.id,
+            user_id: user?.user_id,
             limit: unmaskedLimit,
             due_date: expiryDate,
             name: CardName,

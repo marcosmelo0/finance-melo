@@ -29,8 +29,8 @@ export default function AddExpenseTransaction() {
     const [installments, setInstallments] = useState<string>('');
 
     useEffect(() => {
-        if (user?.id) {
-            GetCard({ userId: user.id }).then((result) => {
+        if (user?.user_id) {
+            GetCard({ userId: user.user_id }).then((result) => {
                 result && setCards(result);
             });
         }
@@ -62,7 +62,7 @@ export default function AddExpenseTransaction() {
                 .from('expenses')
                 .insert([
                     {
-                        user_id: user?.id,
+                        user_id: user?.user_id,
                         type_payment: paymentMethod,
                         value: unmaskedValue,
                         title: description,
