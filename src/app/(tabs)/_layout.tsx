@@ -2,7 +2,7 @@ import colors from '@/constants/colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { router, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 
 export default function TabLayout() {
 
@@ -71,7 +71,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="creditCard/screen"
+          name="creditCard/addCard"
           options={{
             title: 'Adicionar cartão',
             tabBarShowLabel: false,
@@ -92,8 +92,37 @@ export default function TabLayout() {
             href: null,
           }}
         />
-
-
+        <Tabs.Screen
+          name="creditCard/infoCard"
+          options={{
+            title: 'Info Card',
+            tabBarShowLabel: false,
+            headerStyle: { backgroundColor: colors.zinc, borderBottomWidth: 1, borderColor: "#ddd6" },
+            headerShown: true,
+            headerTitleAlign: 'center',
+            headerTintColor: `${colors.white}`,
+            headerLeft: () => (
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                style={{ paddingLeft: 14 }}
+                color={colors.white}
+                onPress={() => router.back()}
+              />
+            ),
+            headerRight: () => (
+              <TouchableOpacity onPress={() => console.log('Lixeira pressionada')}>
+                <Ionicons
+                  name="trash"
+                  size={24}
+                  style={{ paddingRight: 14 }}
+                  color={colors.white}
+                />
+              </TouchableOpacity>
+            ),
+            href: null,
+          }}
+        />
       </Tabs>
     </View>
   );

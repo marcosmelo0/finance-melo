@@ -1,3 +1,4 @@
+import { supabase } from "@/lib/supabase";
 export const supaUrl = "https://idmmnitrkmkpopvdlvcm.supabase.co";
 
 export const anonKey =
@@ -91,4 +92,13 @@ export enum ExpiryDate {
   D29 = "29",
   D30 = "30",
   D31 = "31",
+}
+
+export default async function GetCard({ userId }: { userId: string }) {
+    const { data: cards, error } = await supabase
+        .from('cards')
+        .select('*')
+        .eq('user_id', userId);
+
+    return cards;
 }

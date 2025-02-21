@@ -20,6 +20,7 @@ export interface Income {
 };
 
 export interface Card {
+    id: number;
     user_id: string;
     name: string;
     limit: number;

@@ -16,10 +16,8 @@ export default function Cards() {
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
-        }, 2000);
-    }, [user]);
+        }, 200);
 
-    useEffect(() => {
         const previousCardCount = user?.cards?.length || 0;
 
         const interval = setInterval(() => {
@@ -27,16 +25,20 @@ export default function Cards() {
                 setLoading(true);
                 setTimeout(() => {
                     setLoading(false);
-                }, 0.0500);
+                }, 100);
             }
-        }, 1000);
+        }, 200);
 
         return () => clearInterval(interval);
     }, [user]);
 
     const handleAddCard = () => {
-        router.replace('/(tabs)/creditCard/screen')
-    }
+        router.replace('/(tabs)/creditCard/addCard');
+    };
+
+    const handleInfoCard = (cardId: number) => {
+        router.replace({ pathname: '/(tabs)/creditCard/infoCard', params: { id: cardId } });
+    };
 
     const getCardImage = (bank: string): any => {
         switch (bank) {
@@ -49,7 +51,7 @@ export default function Cards() {
             default:
                 return require('@/assets/images/add_cart.png');
         }
-    }
+    };
 
     const getCardStyles = (bank: string) => {
         switch (bank) {
@@ -62,7 +64,7 @@ export default function Cards() {
             default:
                 return { topPosition: 15, bottomPosition: 90, leftPosition: 75 };
         }
-    }
+    };
 
     return (
         <MainCard>
@@ -74,24 +76,26 @@ export default function Cards() {
                     const { topPosition, bottomPosition, leftPosition } = getCardStyles(card.bank);
 
                     return (
-                        <DivCard key={`${card.bank}-${index}`}>
-                            <ImageCard source={cardImage} />
-                            <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', top: topPosition + 15, left: leftPosition, width: '50%' }}>
-                                <Text fontWeight='bold'>Limite: <Text>{formattedLimit}</Text></Text>
-                            </ShimmerPlaceHolder>
-                            <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', top: topPosition + 40, left: leftPosition, width: '65%' }}>
-                                <Text fontWeight='bold'>Disponível: <Text>{formattedCurrentLimit}</Text></Text>
-                            </ShimmerPlaceHolder>
-                            <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition, left: leftPosition, width: '65%' }}>
-                                <Text fontWeight='bold'>{card.name.toUpperCase()}</Text>
-                            </ShimmerPlaceHolder>
-                            <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition - 25, left: leftPosition, width: '20%' }}>
-                                <Text fontWeight='500'>Fatura:</Text>
-                            </ShimmerPlaceHolder>
-                            <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition - 50, left: leftPosition, width: '30%' }}>
-                                <Text>{card.due_date}/{month}/{year}</Text>
-                            </ShimmerPlaceHolder>
-                        </DivCard>
+                        <TouchableOpacity onPress={() => handleInfoCard(card.id)} key={`${card.bank}-${index}`}>
+                            <DivCard>
+                                <ImageCard source={cardImage} />
+                                <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', top: topPosition + 15, left: leftPosition, width: '50%' }}>
+                                    <Text fontWeight='bold'>Limite: <Text>{formattedLimit}</Text></Text>
+                                </ShimmerPlaceHolder>
+                                <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', top: topPosition + 40, left: leftPosition, width: '65%' }}>
+                                    <Text fontWeight='bold'>Disponível: <Text>{formattedCurrentLimit}</Text></Text>
+                                </ShimmerPlaceHolder>
+                                <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition, left: leftPosition, width: '65%' }}>
+                                    <Text fontWeight='bold'>{card.name.toUpperCase()}</Text>
+                                </ShimmerPlaceHolder>
+                                <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition - 25, left: leftPosition, width: '20%' }}>
+                                    <Text fontWeight='500'>Fatura:</Text>
+                                </ShimmerPlaceHolder>
+                                <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition - 50, left: leftPosition, width: '30%' }}>
+                                    <Text>{card.due_date}/{month}/{year}</Text>
+                                </ShimmerPlaceHolder>
+                            </DivCard>
+                        </TouchableOpacity>
                     );
                 }) : null}
                 <TouchableOpacity onPress={handleAddCard}>
@@ -102,5 +106,5 @@ export default function Cards() {
                 </TouchableOpacity>
             </ScrollContainer>
         </MainCard>
-    )
+    );
 }
