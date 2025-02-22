@@ -4,13 +4,15 @@ import { DivCard, ImageAddCard, ImageCard, MainCard, ScrollContainer, TitleAddCa
 import { Text } from "@/styles/container/style";
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import { router } from "expo-router";
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import colors from "@/constants/colors";
 
 export default function Cards() {
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
     const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
     const year = new Date().getUTCFullYear();
+    const currentDate: number = new Date().getDate();
 
     useEffect(() => {
         setLoading(true);
@@ -58,7 +60,7 @@ export default function Cards() {
             case 'Nubank':
                 return { topPosition: 15, bottomPosition: 70, leftPosition: 75 };
             case 'Inter':
-                return { topPosition: 10, bottomPosition: 95, leftPosition: 75 };
+                return { topPosition: 10, bottomPosition: 85, leftPosition: 75 };
             case 'Brasil Card':
                 return { topPosition: 0, bottomPosition: 62, leftPosition: 20 };
             default:
@@ -70,6 +72,8 @@ export default function Cards() {
         <MainCard>
             <ScrollContainer horizontal contentContainerStyle={{ flexDirection: 'row' }}>
                 {user?.cards ? user.cards.map((card, index) => {
+                    const isOverdue = currentDate > Number(card.due_date);
+
                     const formattedLimit = card.limit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                     const formattedCurrentLimit = card.current_limit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                     const cardImage = getCardImage(card.bank);
@@ -85,15 +89,20 @@ export default function Cards() {
                                 <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', top: topPosition + 40, left: leftPosition, width: '65%' }}>
                                     <Text fontWeight='bold'>Disponível: <Text>{formattedCurrentLimit}</Text></Text>
                                 </ShimmerPlaceHolder>
-                                <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition, left: leftPosition, width: '65%' }}>
+                                <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition + 5, left: leftPosition, width: '65%' }}>
                                     <Text fontWeight='bold'>{card.name.toUpperCase()}</Text>
                                 </ShimmerPlaceHolder>
-                                <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition - 25, left: leftPosition, width: '20%' }}>
+                                <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition - 20, left: leftPosition, width: '20%' }}>
                                     <Text fontWeight='500'>Fatura:</Text>
                                 </ShimmerPlaceHolder>
-                                <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition - 50, left: leftPosition, width: '30%' }}>
+                                <ShimmerPlaceHolder visible={!loading} style={{ position: 'absolute', bottom: bottomPosition - 45, left: leftPosition, width: '30%' }}>
                                     <Text>{card.due_date}/{month}/{year}</Text>
                                 </ShimmerPlaceHolder>
+                                {isOverdue && (
+                                    <View style={{ borderRadius: 10, paddingHorizontal: 5, position: 'absolute', left: leftPosition, bottom: bottomPosition - 65, backgroundColor: colors.gray }}>
+                                        <Text size={12} style={{ color: 'red' }}>Em atraso!</Text>
+                                    </View>
+                                )}
                             </DivCard>
                         </TouchableOpacity>
                     );

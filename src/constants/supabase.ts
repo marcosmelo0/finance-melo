@@ -1,4 +1,7 @@
 import { supabase } from "@/lib/supabase";
+import { User } from "@supabase/supabase-js";
+import { router } from "expo-router";
+import Toast from "react-native-toast-message";
 export const supaUrl = "https://idmmnitrkmkpopvdlvcm.supabase.co";
 
 export const anonKey =
@@ -94,11 +97,103 @@ export enum ExpiryDate {
   D31 = "31",
 }
 
-export default async function GetCard({ userId }: { userId: string }) {
-    const { data: cards, error } = await supabase
-        .from('cards')
-        .select('*')
-        .eq('user_id', userId);
-
-    return cards;
+export interface Expense {
+  user_id: string;
+  title: string;
+  value: number;
+  category: string;
+  date: Date;
+  type_payment: string;
 }
+
+export interface Income {
+  user_id: string;
+  title: string;
+  value: number;
+  category: string;
+  date: Date;
+}
+
+export interface Card {
+  id: number;
+  user_id: string;
+  name: string;
+  limit: number;
+  current_limit: number;
+  due_date: Date;
+  bank: string;
+  flag: string;
+}
+
+export interface Invoices {
+  month: Date;
+  card_id: number;
+  value: number;
+  paid: boolean;
+  expense_id: number;
+}
+
+export interface AuthContextProps {
+  user: {
+    user_id: string;
+    balance: number;
+    name: string;
+    email: string | undefined;
+    image: string | null;
+    expenses: Expense[];
+    incomes: Income[];
+    cards: Card[];
+    invoices: Invoices[];
+  } | null;
+  setAuth: (authUser: User | null) => void;
+  refreshUser: () => void;
+}
+
+export default async function GetCard({ userId }: { userId: string }) {
+  const { data: cards, error } = await supabase
+    .from("cards")
+    .select("*")
+    .eq("user_id", userId);
+
+  return cards;
+}
+
+export const handleDeleteCard = async (cardId: number) => {
+  try {
+    const { error } = await supabase.from("cards").delete().eq("id", cardId);
+    if (error) {
+      throw error;
+    }
+    if (Toast) {
+      Toast.show({
+        type: "success",
+        text1: "Ótimo!",
+        text2: "Cartão deletado com sucesso!",
+        visibilityTime: 4000,
+        autoHide: true,
+        topOffset: 50,
+        bottomOffset: 40,
+      });
+    }
+    if (router) {
+      setTimeout(() => {
+        router.navigate("/(tabs)/home/screen");
+      }, 2000);
+    }
+    return true;
+  } catch (error) {
+    console.error("Erro ao deletar cartão:", error);
+    if (Toast) {
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Não foi possível deletar o cartão.",
+        visibilityTime: 4000,
+        autoHide: true,
+        topOffset: 30,
+        bottomOffset: 40,
+      });
+    }
+    return false;
+  }
+};

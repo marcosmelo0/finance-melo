@@ -1,49 +1,7 @@
+import { AuthContextProps } from "@/constants/supabase";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState } from "react";
-
-export interface Expense {
-    user_id: string;
-    title: string;
-    value: number;
-    category: string;
-    date: Date;
-    type_payment: string;
-};
-
-export interface Income {
-    user_id: string;
-    title: string;
-    value: number;
-    category: string;
-    date: Date;
-};
-
-export interface Card {
-    id: number;
-    user_id: string;
-    name: string;
-    limit: number;
-    current_limit: number;
-    due_date: Date;
-    bank: string;
-    flag: string;
-};
-
-export interface AuthContextProps {
-    user: {
-        user_id: string;
-        balance: number;
-        name: string;
-        email: string | undefined;
-        image: string | null;
-        expenses: Expense[];
-        incomes: Income[];
-        cards: Card[];
-    } | null;
-    setAuth: (authUser: User | null) => void;
-    refreshUser: () => void;
-}
 
 const AuthContext = createContext({} as AuthContextProps);
 
@@ -76,7 +34,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const expensesData = await fetchUserData('expenses', userId);
         const incomesData = await fetchUserData('incomes', userId);
         const cardsData = await fetchUserData('cards', userId);
-        return { ...userData, expenses: expensesData, incomes: incomesData, cards: cardsData || [] };
+        const invoicesData = await fetchUserData('invoices', userId);
+
+        return {
+            ...userData,
+            expenses: expensesData,
+            incomes: incomesData,
+            cards: cardsData || [],
+            invoices: invoicesData || []
+        };
     }
 
     async function setAuth(authUser: User | null) {
@@ -91,6 +57,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     expenses: userData.expenses || [],
                     incomes: userData.incomes || [],
                     cards: userData.cards,
+                    invoices: userData.invoices || [],
                     balance: userData.balance
                 });
             } else {
@@ -113,6 +80,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     expenses: updatedUser.expenses || [],
                     incomes: updatedUser.incomes || [],
                     cards: updatedUser.cards,
+                    invoices: updatedUser.invoices || [],
                     balance: updatedUser.balance
                 });
             }
@@ -131,7 +99,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
                             const updatedUser = await fetchUser(user.user_id);
                             if (updatedUser) {
-                                console.log(updatedUser)
                                 setUser(prevUser => {
                                     if (!prevUser) return prevUser;
 
@@ -140,6 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                                         expenses: updatedUser.expenses || prevUser.expenses,
                                         incomes: updatedUser.incomes || prevUser.incomes,
                                         cards: updatedUser.cards || prevUser.cards,
+                                        invoices: updatedUser.invoices || prevUser.invoices, // Adicionado invoices
                                         balance: updatedUser.balance
                                     };
                                 });
@@ -152,14 +120,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const expensesSubscription = subscribeToChanges('expenses');
             const incomesSubscription = subscribeToChanges('incomes');
             const cardsSubscription = subscribeToChanges('cards');
+            const invoicesSubscription = subscribeToChanges('invoices');
 
             return () => {
                 supabase.removeChannel(expensesSubscription);
                 supabase.removeChannel(incomesSubscription);
                 supabase.removeChannel(cardsSubscription);
+                supabase.removeChannel(invoicesSubscription);
             };
-        } else {
-            console.log('Nenhum usuário detectado');
         }
     }, [user]);
 

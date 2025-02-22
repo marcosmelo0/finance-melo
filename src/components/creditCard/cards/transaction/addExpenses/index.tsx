@@ -78,7 +78,7 @@ export default function AddExpenseTransaction() {
                 text2: 'Despesa cadastrada com sucesso!',
                 visibilityTime: 4000,
                 autoHide: true,
-                topOffset: 30,
+                topOffset: 50,
                 bottomOffset: 40,
             });
 
@@ -97,7 +97,7 @@ export default function AddExpenseTransaction() {
                 text2: 'Erro ao adicionar despesa.',
                 visibilityTime: 4000,
                 autoHide: true,
-                topOffset: 30,
+                topOffset: 50,
                 bottomOffset: 40,
             });
             console.error('Error inserting new expense:', error.message);

@@ -37,6 +37,7 @@ export default function TabLayout() {
 
               />
             ),
+            tabBarStyle: { display: 'none' },
             tabBarIcon: ({ color, focused }) => (
               <View style={{ borderRadius: 9999, alignItems: 'center', justifyContent: 'center', width: 40, height: 40, top: 4 }}>
                 <FontAwesome size={32} name="money" color={focused ? colors.green : colors.white} />
@@ -53,6 +54,7 @@ export default function TabLayout() {
             headerShown: true,
             headerTitleAlign: 'center',
             headerTintColor: `${colors.white}`,
+            tabBarStyle: { display: 'none' },
             tabBarIcon: ({ color, focused }) => (
               <View style={{ borderRadius: 999, alignItems: 'center', justifyContent: 'center', width: 45, height: 32, backgroundColor: focused ? colors.zinc : colors.lightGray, top: 4, }}>
                 <FontAwesome size={20} name="plus" color={focused ? colors.green : colors.zinc} />
@@ -79,6 +81,7 @@ export default function TabLayout() {
             headerShown: true,
             headerTitleAlign: 'center',
             headerTintColor: `${colors.white}`,
+            tabBarStyle: { display: 'none' },
             headerLeft: () => (
               <Ionicons
                 name="arrow-back"
@@ -95,12 +98,13 @@ export default function TabLayout() {
         <Tabs.Screen
           name="creditCard/infoCard"
           options={{
-            title: 'Info Card',
+            title: 'Meu cartão',
             tabBarShowLabel: false,
             headerStyle: { backgroundColor: colors.zinc, borderBottomWidth: 1, borderColor: "#ddd6" },
             headerShown: true,
             headerTitleAlign: 'center',
             headerTintColor: `${colors.white}`,
+            tabBarStyle: { display: 'none' },
             headerLeft: () => (
               <Ionicons
                 name="arrow-back"
@@ -110,16 +114,7 @@ export default function TabLayout() {
                 onPress={() => router.back()}
               />
             ),
-            headerRight: () => (
-              <TouchableOpacity onPress={() => console.log('Lixeira pressionada')}>
-                <Ionicons
-                  name="trash"
-                  size={24}
-                  style={{ paddingRight: 14 }}
-                  color={colors.white}
-                />
-              </TouchableOpacity>
-            ),
+           
             href: null,
           }}
         />
