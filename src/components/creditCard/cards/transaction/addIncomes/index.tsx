@@ -56,16 +56,17 @@ export default function AddIncomes() {
             Toast.show({
                 type: 'success',
                 text1: 'Ótimo!',
-                text2: 'Despesa cadastrada com sucesso!',
+                text2: 'Receita cadastrada com sucesso!',
                 visibilityTime: 4000,
                 autoHide: true,
-                topOffset: 30,
+                topOffset: 70,
                 bottomOffset: 40,
             });
 
-            setDescription('');
+            setDescription(""); // Certifique-se de que não há espaços em branco
             setSelectedCategory('');
-            setValue('')
+            setValue('');
+            setDate(new Date());
 
         } catch (error: any) {
             Toast.show({
@@ -123,6 +124,7 @@ export default function AddIncomes() {
                 )}
 
                 <Input
+                    value={description}
                     onChangeText={setDescription}
                     placeholder="De onde veio o dinheiro?"
                     placeholderTextColor={colors.zinc}

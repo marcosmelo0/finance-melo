@@ -6,6 +6,7 @@ export const MainHeaderContainer = styled.View`
     gap: 10px;
     align-items: center;
     padding-top: 10px;
+    padding-bottom: 10px;
     justify-content: space-between;
     width: 100%;
     border-bottom-width: 1px;

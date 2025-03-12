@@ -4,7 +4,9 @@ import { Avatar, DivAvatar, DivWelcome, MainHeaderContainer } from "./style";
 import colors from "../../../constants/colors";
 import { Text } from "@/styles/container/style";
 import { supabase } from "@/lib/supabase";
+import { AntDesign } from '@expo/vector-icons';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
+import { TouchableOpacity } from "react-native";
 
 export default function MainHeader() {
     const { user } = useAuth();
@@ -45,7 +47,7 @@ export default function MainHeader() {
                     <ShimmerPlaceHolder visible={!loading} style={{ width: 40, height: 40, borderRadius: 20 }} />
                 </DivAvatar>
                 <DivWelcome>
-                    <ShimmerPlaceHolder  visible={!loading} style={{ width: 100, height: 20, marginBottom: 5 }} />
+                    <ShimmerPlaceHolder visible={!loading} style={{ width: 100, height: 20, marginBottom: 5 }} />
                     <ShimmerPlaceHolder visible={!loading} style={{ width: 150, height: 20 }} />
                 </DivWelcome>
                 <ShimmerPlaceHolder visible={!loading} style={{ width: 65, height: 65, borderRadius: 32.5 }} />
@@ -66,7 +68,9 @@ export default function MainHeader() {
                 <Text fontWeight="bold">{user?.name}</Text>
                 <Text onPress={() => supabase.auth.signOut()}>{greeting}</Text>
             </DivWelcome>
-            <Avatar source={require('@/assets/images/splash_logo.png')} size={65} />
+            <TouchableOpacity onPress={() => supabase.auth.signOut()}>
+                <AntDesign name="logout" size={24} color={colors.white} />
+            </TouchableOpacity>
         </MainHeaderContainer>
     );
 }

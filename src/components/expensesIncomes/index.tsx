@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Text } from "@/styles/container/style";
 import { CardExpenses, CardIncomes, DivIcon, HeaderCard, MainDiv } from "./styles";
 import { View } from "react-native";
-import { Expense, Income, useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import Icon from 'react-native-vector-icons/Feather';
 import colors from "@/constants/colors";
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
+import { Expense, Income } from "@/constants/supabase";
 
 export default function ExpensesIncomes() {
     const { user } = useAuth();
