@@ -24,6 +24,8 @@ export enum Installments {
 
 export enum categories_expenses {
   PIX = "PIX",
+  Aluguel = "Aluguel",
+  Condominio = "Condomínio",
   Gasolina = "Gasolina",
   Farmacia = "Farmácia",
   Supermercado = "Supermercado",
@@ -45,6 +47,7 @@ export enum categories_expenses {
   Oftalmologista = "Oftalmologista",
   Viagem = "Viagem",
   VR = "VR",
+  Outros = "Outros",
 }
 
 export enum Category {
