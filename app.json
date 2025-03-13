@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "finance-melo",
-    "slug": "finance-melo",
+    "name": "Finance Melo",
+    "slug": "Finance Melo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/splash_logo.png",
