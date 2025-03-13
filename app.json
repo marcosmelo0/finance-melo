@@ -20,7 +20,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/splash_logo.png",
         "backgroundColor": "#0c0c1b"
-      }
+      },
+      "package": "com.marcosmelo0.financemelo"
     },
     "web": {
       "bundler": "metro",
@@ -32,6 +33,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "726cebfd-573b-48c5-931e-9034abbc037c"
+      }
     }
   }
 }
