@@ -7,7 +7,6 @@ import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
 import { useAuth } from "@/contexts/AuthContext";
 import { Expense, Income } from "@/constants/supabase";
 import colors from "@/constants/colors";
-import ExpensesIncomes from "../expensesIncomes";
 
 const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
@@ -20,8 +19,13 @@ export default function Transactions() {
         setSelectedMonth(currentMonth);
     }, []);
 
-    const filteredExpenses = user?.expenses.filter((expense: Expense) => new Date(expense.date).getMonth() === selectedMonth) || [];
-    const filteredIncomes = user?.incomes.filter((income: Income) => new Date(income.date).getMonth() === selectedMonth) || [];
+    const filteredExpenses = user?.expenses
+        .filter((expense: Expense) => new Date(expense.date).getMonth() === selectedMonth)
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) || [];
+
+    const filteredIncomes = user?.incomes
+        .filter((income: Income) => new Date(income.date).getMonth() === selectedMonth)
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) || [];
 
     const amountExpense = filteredExpenses.reduce((acc: number, expense: Expense) => acc + expense.value, 0);
     const formattedExpenses = amountExpense.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -90,6 +94,11 @@ export default function Transactions() {
                                     {expense.type_payment === 'Cartão de crédito' && (
                                         <Icon style={{ padding: 12, backgroundColor: 'red', borderRadius: 10 }} name='credit-card' size={20} color='aliceblue' />
                                     )}
+                                    {expense.type_payment === 'PIX' && (
+                                        <View style={{ flexDirection: 'column' }}>
+                                            <FontAwesome6 style={{ padding: 12, backgroundColor: colors.green, borderRadius: 10 }} name='pix' color='aliceblue' size={20} />
+                                        </View>
+                                    )}
                                     <Text>{expense.category}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
@@ -101,7 +110,7 @@ export default function Transactions() {
                         {filteredIncomes.map((income: Income, index) => (
                             <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', borderWidth: 1, borderBottomColor: colors.lightGray, padding: 10, borderRadius: 10, marginBottom: 5 }}>
                                 <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                                    <FontAwesome6 style={{ padding: 12, backgroundColor: colors.green, borderRadius: 10 }} name='pix' color={colors.zinc} size={20} />
+                                    <Icon style={{ padding: 12, backgroundColor: colors.green, borderRadius: 10 }} name='dollar-sign' size={20} color='aliceblue' />
                                     <Text>{income.category}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>

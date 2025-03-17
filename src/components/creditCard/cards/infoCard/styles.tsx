@@ -11,7 +11,11 @@ export const ContainerCard = styled.View`
 export const DivInvoices = styled.View`
     width: 90%;
     justify-content: center;
+    flex-direction: row;
     margin-top: 30px;
-    border-radius: 10px;
-   padding-left: 15px
+    border-radius: 20px;
+    padding: 10px 15px;
+    border-width: 1px;
+    border-color: aliceblue;
+    justify-content: space-between;
 `;

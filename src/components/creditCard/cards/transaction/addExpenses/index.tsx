@@ -41,7 +41,7 @@ export default function AddExpenseTransaction() {
 
     const handleSubmit = async () => {
         try {
-            Keyboard.dismiss();
+
             const unmaskedValue = value ? parseFloat(value.replace(/[^\d]/g, '')) / 100 : 0;
             if (unmaskedValue <= 0) {
                 Toast.show({
@@ -56,17 +56,33 @@ export default function AddExpenseTransaction() {
                 return;
             }
 
-            const numericInstallments = installments ? parseInt(installments.replace(/[^\d]/g, '')) : 0;
+            const numericInstallments = installments && installments.trim() !== ''
+                ? Math.max(1, parseInt(installments.replace(/[^\d]/g, '')))
+                : null;
+            if (paymentMethod === 'Cartão de crédito' && (numericInstallments === null || numericInstallments <= 0)) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Erro!',
+                    text2: 'O número de parcelas deve ser maior que zero.',
+                    visibilityTime: 4000,
+                    autoHide: true,
+                    topOffset: 30,
+                    bottomOffset: 40,
+                });
+                return;
+            }
+
+            const cardId = paymentMethod === 'Pix' ? null : selectedCard;
             const { data, error } = await supabase
                 .from('expenses')
                 .insert([
                     {
                         user_id: user?.user_id,
-                        type_payment: paymentMethod,
+                        type_payment: paymentMethod === 'Pix' ? 'PIX' : paymentMethod,
                         value: unmaskedValue,
                         title: description,
                         category: selectedCategory,
-                        card_id: selectedCard,
+                        card_id: cardId,
                         date: date,
                         installments: numericInstallments
                     }
@@ -87,8 +103,8 @@ export default function AddExpenseTransaction() {
             setInstallments('');
             setSelectedCategory('');
             setValue('');
-            setDescription('');
             setDate(new Date());
+            setDescription('');
 
         } catch (error: any) {
             Toast.show({
@@ -202,6 +218,7 @@ export default function AddExpenseTransaction() {
                     </Text>
                 )}
                 <Input
+                    value={description}
                     placeholder="Gastei com o que?"
                     placeholderTextColor={colors.zinc}
                     style={{ marginTop: 15, padding: 10, borderWidth: 1, borderColor: colors.zinc, borderRadius: 10, backgroundColor: 'aliceblue', color: colors.zinc }}

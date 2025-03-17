@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Finance Melo",
-    "slug": "Finance Melo",
+    "slug": "Finance-Melo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/splash_logo.png",
@@ -14,7 +14,11 @@
       "backgroundColor": "#0c0c1b"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.marcosmelo0.financemelo",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -39,7 +43,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "726cebfd-573b-48c5-931e-9034abbc037c"
+        "projectId": "d46dd851-d7ec-4071-a145-ab0a97e81b3b"
       }
     }
   }

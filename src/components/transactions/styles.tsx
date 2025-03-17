@@ -17,7 +17,7 @@ export const DivCashFlow = styled.View`
     margin-top: 70px;
     border-width: 1px;
     border-color: #808080;
-    width: 95%;
+    width: 100%;
     border-radius: 20px;
 `;
 
@@ -25,13 +25,15 @@ export const DivCashFlowTransactions = styled.View`
     display: flex;
     flex-direction: row;
     top: 10px;
+    gap: 5px;
     justify-content: space-between;
+    right: 10px;
 `;
 
 export const DivTransactions = styled.View`
     margin-top: 10px;
-    padding: 10px;
-    gap: 5;
+    padding: 10px 0px;
+    gap: 5px;
 `;
 
 export const DivFilter = styled.View`

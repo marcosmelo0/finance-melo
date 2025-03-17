@@ -9,7 +9,7 @@ import { View, TouchableOpacity, Alert } from "react-native";
 export default function Balance() {
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
-    const [showBalance, setShowBalance] = useState(true)
+    const [showBalance, setShowBalance] = useState(false)
 
     useEffect(() => {
         if (user) {

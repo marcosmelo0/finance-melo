@@ -19,13 +19,16 @@ export default function HistoryTransaction() {
             return [];
         }
 
+        let transactions = [];
         if (activeLabel === 'Despesas') {
-            return user.expenses;
+            transactions = user.expenses;
         } else if (activeLabel === 'Receitas') {
-            return user.incomes;
+            transactions = user.incomes;
         } else {
-            return [...user.expenses, ...user.incomes];
+            transactions = [...user.expenses, ...user.incomes];
         }
+
+        return transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     };
 
     return (
@@ -40,22 +43,24 @@ export default function HistoryTransaction() {
                 return (
                     <CardTransactions key={index}>
                         <DivIcon style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-
                             {isExpense ? (
                                 <>
                                     {transaction.type_payment === 'Cartão de crédito' && (
                                         <Icon style={{ padding: 12, backgroundColor: 'red', borderRadius: 10 }} name='credit-card' size={20} color='aliceblue' />
                                     )}
+                                    {transaction.type_payment === 'PIX' && (
+                                        <View style={{ flexDirection: 'column' }}>
+                                            <FontAwesome6 style={{ padding: 12, backgroundColor: colors.green, borderRadius: 10 }} name='pix' color={colors.zinc} size={20} />
+                                            <Text fontWeight='bold' color={colors.zinc} size={10} style={{ bottom: 15, left: 14 }}>Pix</Text>
+                                        </View>
+                                    )}
                                 </>
                             ) : (
-                                <View style={{ flexDirection: 'column' }}>
-                                    <FontAwesome6 style={{ padding: 12, backgroundColor: colors.green, borderRadius: 10 }} name='pix' color={colors.zinc} size={20} /><Text fontWeight='bold' color={colors.zinc} size={10} style={{ bottom: 15, left: 14 }}>Pix</Text>
-                                </View>
+                                <Icon style={{ padding: 12, backgroundColor: colors.green, borderRadius: 10 }} name='dollar-sign' size={20} color='aliceblue' />
                             )}
                             <Text>{transaction.category}</Text>
                         </DivIcon>
                         <DivIcon style={{ flexDirection: 'row', gap: 5 }}>
-
                             <Icon style={{ top: 2 }} name={isExpense ? 'arrow-down' : 'arrow-up'} size={18} color={isExpense ? 'red' : colors.green} />
                             <Text fontWeight='bold' color={isExpense ? 'red' : colors.green}>{transaction.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
                         </DivIcon>

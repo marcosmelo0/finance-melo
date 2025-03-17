@@ -1,6 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Text } from '@/styles/container/style';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { DivCard, ImageCard } from '../styles';
 import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
 import { ContainerCard, DivInvoices } from './styles';
@@ -8,6 +8,7 @@ import colors from '@/constants/colors';
 import Toast from 'react-native-toast-message';
 import { toastConfigTransactions } from '@/constants/toastconfigs';
 import React from 'react';
+import { DivCashFlow } from '@/components/transactions/styles';
 
 export default function InfoCardComponent({ cardId }: { cardId: number }) {
     const { user } = useAuth();
@@ -56,7 +57,7 @@ export default function InfoCardComponent({ cardId }: { cardId: number }) {
     const year = new Date().getUTCFullYear();
     const currentDate: number = new Date().getDate();
     const isOverdue = currentDate > Number(card.due_date);
-   
+
 
     const currentMonthInvoices = invoices?.filter(invoice => {
         const invoiceMonth = new Date(invoice.month).getMonth() + 1;
@@ -100,15 +101,21 @@ export default function InfoCardComponent({ cardId }: { cardId: number }) {
                             style: 'currency', currency: 'BRL'
                         });
                         return (
+
+
                             <View key={index}>
                                 <Text>Fatura Atual:</Text>
                                 <Text> {formattedInvoiceValue}</Text>
                             </View>
+
                         );
                     })
                 ) : (
-                    <Text>No invoices available for this month</Text>
+                    <Text>Não há faturas disponíveis para esse mês! 😊</Text>
                 )}
+                <TouchableOpacity>
+                    <Text style={{ color: 'aliceblue', backgroundColor: colors.primary, borderRadius: 5, padding: 10 }}>Pagar Fatura</Text>
+                </TouchableOpacity>
             </DivInvoices>
         </>
     );
