@@ -20,8 +20,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 return null;
             }
             return data;
-        } catch (networkError) {
+        } catch (networkError: any) {
             console.log(`Erro de rede ao buscar dados de ${table}:`, networkError);
+            if (networkError.message.includes('Network request failed')) {
+                console.log("Refazendo a requisição...");
+                return await fetchUserData(table, userId);
+            }
             return null;
         }
     }
@@ -34,7 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 .eq('user_id', userId)
                 .single();
             if (userError) {
-                console.error("Erro ao buscar usuário:", userError);
+                console.log("Erro ao buscar usuário:", userError);
                 return null;
             }
 
@@ -50,8 +54,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 cards: cardsData || [],
                 invoices: invoicesData || []
             };
-        } catch (error) {
+        } catch (error: any) {
             console.log("Erro ao buscar dados do usuário:", error);
+            if (error.message.includes('Network request failed')) {
+                console.log("Refazendo a requisição...");
+                return await fetchUser(userId);
+            }
             return null;
         }
     }
@@ -85,6 +93,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (error: any) {
             if (error.message.includes('Invalid Refresh Token: Refresh Token Not Found')) {
                 router.replace('/(auth)/signin/page');
+            } else if (error.message.includes('Network request failed')) {
+                console.log("Erro de rede ao definir autenticação, refazendo a requisição...");
+                await setAuth(authUser);
             } else {
                 console.log("Erro ao definir autenticação:", error);
             }
