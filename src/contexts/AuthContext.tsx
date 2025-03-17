@@ -2,6 +2,7 @@ import { AuthContextProps } from "@/constants/supabase";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState } from "react";
+import { router } from "expo-router";
 
 const AuthContext = createContext({} as AuthContextProps);
 
@@ -58,7 +59,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     async function setAuth(authUser: User | null) {
         try {
             if (authUser) {
-                const userData = await fetchUser(authUser.id);
+                let userData = await fetchUser(authUser.id);
+                if (!userData) {
+                    console.log("User data is null, refazendo a requisição...");
+                    userData = await fetchUser(authUser.id);
+                }
                 if (userData) {
                     setUser({
                         user_id: authUser.id,
@@ -72,13 +77,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         balance: userData.balance
                     });
                 } else {
-                    console.log("User data is null");
+                    console.log("User data is still null after retry");
                 }
             } else {
                 setUser(null);
             }
-        } catch (error) {
-            console.log("Erro ao definir autenticação:", error);
+        } catch (error: any) {
+            if (error.message.includes('Invalid Refresh Token: Refresh Token Not Found')) {
+                router.replace('/(auth)/signin/page');
+            } else {
+                console.log("Erro ao definir autenticação:", error);
+            }
         }
     }
 
